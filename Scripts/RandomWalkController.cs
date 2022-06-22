@@ -26,7 +26,7 @@ public class RandomWalkController : MMPoseProvider
     public float FPS = 60;
     public bool active = true;
     public float syncTimer = 0;
-    float forceSearchTimer = 0.1f;
+    public float forceSearchTimer = 0.1f;
     public int nnDistributionSize = 100;
     public float interval;
     public float dt;

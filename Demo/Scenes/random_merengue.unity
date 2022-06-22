@@ -135,7 +135,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352666452}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e4b91e59a82921e4fa52caab97b8f343, type: 3}
   m_Name: 
@@ -2413,7 +2413,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8249006124080558883, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
       propertyPath: active
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8249006124080558883, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
       propertyPath: activateSimBone
@@ -2422,6 +2422,10 @@ PrefabInstance:
     - target: {fileID: 8249006124080558883, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
       propertyPath: settings.startFrameIdx
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8249006124080558883, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
+      propertyPath: settings.forceSearchTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8249006124080558940, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
       propertyPath: m_Name
