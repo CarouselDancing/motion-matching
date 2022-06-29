@@ -215,6 +215,8 @@ MonoBehaviour:
     simulationAcceleration: {x: 0, y: 0, z: 0}
     simulationRotation: {x: 0, y: 0, z: 0, w: 0}
     simulationAV: {x: 0, y: 0, z: 0}
+    motionVelocity: {x: 0, y: 0, z: 0}
+    motionAV: {x: 0, y: 0, z: 0}
     nBones: 0
     boneParents: 
     bonePositions: []
@@ -910,6 +912,8 @@ MonoBehaviour:
     simulationAcceleration: {x: 0, y: 0, z: 0}
     simulationRotation: {x: 0, y: 0, z: 0, w: 0}
     simulationAV: {x: 0, y: 0, z: 0}
+    motionVelocity: {x: 0, y: 0, z: 0}
+    motionAV: {x: 0, y: 0, z: 0}
     nBones: 0
     boneParents: 
     bonePositions: []
@@ -932,6 +936,9 @@ MonoBehaviour:
   active: 1
   desiredRotation: {x: 0, y: 0, z: 0, w: 0}
   target: {fileID: 806401635}
+  orientTowardsTarget: 1
+  useMotionVelocity: 0
+  invertDirection: 0
 --- !u!1 &1762674954
 GameObject:
   m_ObjectHideFlags: 0

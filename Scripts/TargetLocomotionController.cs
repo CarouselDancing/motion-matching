@@ -32,7 +32,9 @@ public class TargetLocomotionController : MMPoseProvider
     float forwardSpeed;
     float sideSpeed;
     public Transform target;
-
+    public bool orientTowardsTarget;
+    public bool useMotionVelocity;
+    public bool invertDirection;
 
     void Start()
     {
@@ -84,8 +86,13 @@ public class TargetLocomotionController : MMPoseProvider
 
         //update simulation
         float dt = interval;
-        simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, desiredVelocity, settings.simulationVelocityHalflife, dt);
-        simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, desiredRotation, settings.simulationRotationHalflife, dt);
+        Vector3 velocity = desiredVelocity;
+        if(useMotionVelocity){
+            velocity = poseState.simulationRotation* poseState.motionVelocity;
+        }
+        Quaternion rotation = desiredRotation;
+        simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, velocity, settings.simulationVelocityHalflife, dt);
+        simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, rotation, settings.simulationRotationHalflife, dt);
 
         bool end_of_anim = false;
         try
@@ -159,6 +166,10 @@ public class TargetLocomotionController : MMPoseProvider
 
         Gizmos.color = Color.yellow;
         if (refPose != null) refPose.Draw(settings.visScale);
+
+        Gizmos.color = Color.red;
+        var motionVelocity = poseState.simulationRotation * poseState.motionVelocity;
+        Gizmos.DrawLine(poseState.simulationPosition, poseState.simulationPosition + motionVelocity * 10);
     }
 
    
@@ -187,10 +198,11 @@ public class TargetLocomotionController : MMPoseProvider
     }
 
     Quaternion UpdateDesiredRotation(Vector3 desiredVelocity, float dt)
-    {
+    { 
         //var angles = Mathf.Deg2Rad * camera.PredictRotation(dt);
-        if (Vector3.Magnitude(desiredVelocity ) > 0){ 
+        if (Vector3.Magnitude(desiredVelocity ) > 0 && orientTowardsTarget){ 
             var direction = desiredVelocity.normalized;
+            if (invertDirection) direction = -direction;
             var a = Mathf.Rad2Deg * Mathf.Atan2(direction.x, direction.z);
             return Quaternion.AngleAxis(a, new Vector3(0, 1, 0));
         }

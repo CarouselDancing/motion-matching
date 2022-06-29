@@ -174,9 +174,9 @@ public class MMDatabase
     public int nFrames;
     public int nBones;
     public int nMusicDims;
-    public Vector3[,] bonePositions;
-    public Vector3[,] boneVelocities;
-    public Quaternion[,] boneRotations;
+    public Vector3[,] bonePositions; //offsets relative to parent
+    public Vector3[,] boneVelocities; //velocites relative to parent coordinate system
+    public Quaternion[,] boneRotations; //rotations relative to parent coordinate system
     public Vector3[,] boneAngularVelocities;
     public int[] boneParents;
     public int[] rangeStart;
@@ -346,9 +346,10 @@ public class MMDatabase
 
 
 
+    // hard coded for left foot right foot and hips
     public void GetFeatureTrajectory(PoseState state, int frameIdx, ref List<Vector3> featureTrajectoryPos)
     {
-        int offset = 15;
+        int offset = 15;// skip to the  joint features
         float x1 = (features[frameIdx, offset + 0] * featuresScale[offset + 0]) + featuresMean[offset + 0];
         float z1 = (features[frameIdx, offset + 1] * featuresScale[offset + 1]) + featuresMean[offset + 1];
 

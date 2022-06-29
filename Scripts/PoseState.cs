@@ -17,6 +17,8 @@ public class PoseState
     public Vector3 simulationAcceleration;
     public Quaternion simulationRotation;
     public Vector3 simulationAV;
+    public Vector3 motionVelocity;
+    public Vector3 motionAV;
     public int nBones;
     public int[] boneParents;
     public Vector3[] bonePositions;
@@ -73,10 +75,13 @@ public class PoseState
             bonePositions[i] = db.bonePositions[frameIdx, i];
             boneRotations[i] = db.boneRotations[frameIdx, i];
         }
+        var invRootRot = Quaternion.Inverse(db.boneRotations[i, 0]);
+        motionVelocity = invRootRot * db.boneVelocities[frameIdx, 0];
+        motionAV = invRootRot * db.boneAngularVelocities[frameIdx, 0];
         if (useSim && setSimVelocity)
         {
-            simulationVelocity = db.boneVelocities[frameIdx, 0];
-            simulationAV = db.boneAngularVelocities[frameIdx, 0];
+            simulationVelocity = motionVelocity;
+            simulationAV = motionAV;
         }
         UpdateFKBuffer();
     }
@@ -132,9 +137,10 @@ public class PoseState
     {
         for (int boneIdx = 0; boneIdx < nBones; boneIdx++)
         {
-            var p = bonePositions[boneIdx];
-            Vector3 pos; Quaternion rot;
-            ForwardKinematics(out pos, out rot, boneIdx);
+            //var p = bonePositions[boneIdx];
+            //Vector3 pos; Quaternion rot;
+            //ForwardKinematics(out pos, out rot, boneIdx);
+            Vector3 pos = fkPositionBuffer[boneIdx];
             Gizmos.DrawSphere(pos, visScale);
         }
     }
