@@ -8,7 +8,7 @@ namespace Carousel
 
 namespace MotionMatching{
 
-public abstract class PoseProviderBase : MonoBehaviour
+public abstract class PoseProviderBase : PlayerControllerBase
 {
 
     abstract public void ResetToIdle();

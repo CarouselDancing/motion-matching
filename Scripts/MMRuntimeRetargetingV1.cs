@@ -30,8 +30,8 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
     private List<Transform> _transforms;
     private List<Transform> _srcTransforms;
     public List<RetargetingMap> retargetingMap;
-    public float visLength = 10;
-    public string rootName;
+    public float visLength = 0.1f;
+    public string rootName = "ROOT";
     public Vector3 rootOffset;
     public bool bringToLocal = true;
     public bool mirror = false;
@@ -42,7 +42,7 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
     bool initialized = false;
 
 
-    void Awake()
+    void Start()
     {
         SetTransforms();
     }

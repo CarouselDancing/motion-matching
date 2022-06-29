@@ -11,6 +11,7 @@ namespace MotionMatching{
 public class LocomotionController : MMPoseProvider
 {
 
+    public PlayerInteractionZone interaction;
     PoseState refPose; 
     public MMControllerSettigs settings;
     public CameraController cameraController;
