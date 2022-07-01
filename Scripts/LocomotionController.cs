@@ -39,6 +39,9 @@ public class LocomotionController : MMPoseProvider
     float sideSpeed;
     void Start()
     {
+        
+        var anim = GetComponent<Animator>();
+        anim.enabled = false;
         poseState = mm.Load();
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();

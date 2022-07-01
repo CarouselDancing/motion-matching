@@ -38,6 +38,9 @@ public class TargetLocomotionController : MMPoseProvider
 
     void Start()
     {
+        
+        var anim = GetComponent<Animator>();
+        anim.enabled = false;
         poseState = mm.Load();
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
@@ -176,15 +179,19 @@ public class TargetLocomotionController : MMPoseProvider
 
     Vector3 UpdateDesiredVelocity(float dt)
     {
-        var delta = target.position- transform.position;
-        delta.y =0;
-        var localDelta = Quaternion.Inverse(poseState.simulationRotation) * delta;
-       
+        Vector3 localDelta = Vector3.zero;
+        Vector3 globalStickDir = Vector3.zero;
+        if(target != null){
+
+            var delta = target.position- transform.position;
+            delta.y =0;
+            localDelta = Quaternion.Inverse(poseState.simulationRotation) * delta;
+            globalStickDir = delta.normalized;
+        }
         
         forwardSpeed = Mathf.Min(Mathf.Abs(localDelta.z),settings.maxSpeed);
         sideSpeed = Mathf.Min(Mathf.Abs(localDelta.x),settings.maxSpeed);
         
-        var globalStickDir = delta.normalized;
         var localStickDir = Quaternion.Inverse(poseState.simulationRotation) * globalStickDir;
         // Scale stick by forward, sideways and backwards speeds
         if(forwardSpeed >= sideSpeed) { 
@@ -206,12 +213,13 @@ public class TargetLocomotionController : MMPoseProvider
             var a = Mathf.Rad2Deg * Mathf.Atan2(direction.x, direction.z);
             return Quaternion.AngleAxis(a, new Vector3(0, 1, 0));
         }
-        else
-        {
+        else if(target != null){ //copy target rotation
 
             //var cameraAngles = cameraController.PredictRotation(dt);
             //var cameraRot = Quaternion.AngleAxis(cameraAngles.y, new Vector3(0, 1, 0));
             return target.rotation;
+        }else{
+            return poseState.simulationRotation; // return current rotation
         }
         
     }
