@@ -43,6 +43,9 @@ public class LocomotionController : MMPoseProvider
         var anim = GetComponent<Animator>();
         anim.enabled = false;
         poseState = mm.Load();
+        poseState.simulationPosition = transform.position;
+        poseState.simulationPosition.y = 0;
+        poseState.simulationRotation = transform.rotation;
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
 
