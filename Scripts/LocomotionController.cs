@@ -97,6 +97,8 @@ public class LocomotionController : MMPoseProvider
         simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, desiredVelocity, settings.simulationVelocityHalflife, dt);
         simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, desiredRotation, settings.simulationRotationHalflife, dt);
 
+        frameIdx++;//prevents getting stuck
+        
         bool end_of_anim = false;
         try
         {
@@ -117,7 +119,7 @@ public class LocomotionController : MMPoseProvider
         {
             prediction = false;
         }
-        frameIdx++;//prevents getting stuck
+        frameIdx = mm.trajectoryIndexClamp(frameIdx, 1);
         SetPose();
 
 

@@ -97,6 +97,8 @@ public class TargetLocomotionController : MMPoseProvider
         simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, velocity, settings.simulationVelocityHalflife, dt);
         simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, rotation, settings.simulationRotationHalflife, dt);
 
+        frameIdx++;//prevents getting stuck
+
         bool end_of_anim = false;
         try
         {
@@ -117,9 +119,9 @@ public class TargetLocomotionController : MMPoseProvider
         {
             prediction = false;
         }
-        frameIdx++;//prevents getting stuck
+        frameIdx = mm.trajectoryIndexClamp(frameIdx, 1);
         SetPose();
-
+    
 
         transform.position = poseState.simulationPosition;
         transform.rotation = poseState.simulationRotation;
