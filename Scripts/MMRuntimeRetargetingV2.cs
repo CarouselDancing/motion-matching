@@ -8,7 +8,7 @@ namespace Carousel
 
 namespace MotionMatching{
 
-public class MMRuntimeRetargetingV2 : MonoBehaviour
+public class MMRuntimeRetargetingV2 : CharacterPoser
 {
     [Serializable]
     public class RetargetingMap
@@ -32,7 +32,6 @@ public class MMRuntimeRetargetingV2 : MonoBehaviour
     public bool showSrcGizmos = false;
     public bool showDstGizmos = false;
     RetargetingMap rootMap;
-    bool initialized = false;
     Animator anim;
     public bool automatic = false;
     // Start is called before the first frame update
@@ -46,7 +45,7 @@ public class MMRuntimeRetargetingV2 : MonoBehaviour
         src.ResetToIdle();
     }
 
-    public void SetTransforms()
+    override public void SetTransforms()
     {
         
 
@@ -72,16 +71,16 @@ public class MMRuntimeRetargetingV2 : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-
+        if(!active || inPipeline)return;
         //transform.position = src.GetGlobalPosition(Bones.Entity);
-        if (initialized && automatic) OrientToTarget();
+        if (!initialized) SetTransforms();
+        UpdatePose();
     }
-
     public void TriggerUpdate()
     {
         if (initialized)
         {
-            OrientToTarget();
+            UpdatePose();
         }
     }
 
@@ -102,7 +101,7 @@ public class MMRuntimeRetargetingV2 : MonoBehaviour
         return rotation;
     }
 
-    public void OrientToTarget()
+    override public void UpdatePose()
     {
         Quaternion srcRotation;
         Vector3 srcPosition;

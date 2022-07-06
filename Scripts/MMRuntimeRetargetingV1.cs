@@ -10,7 +10,7 @@ namespace Carousel
 {
 
 namespace MotionMatching{
-public class MMRuntimeRetargetingV1 : MonoBehaviour
+public class MMRuntimeRetargetingV1 : CharacterPoser
 {
     [Serializable]
     public class RetargetingMap
@@ -39,7 +39,6 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
     public bool showDstGizmos = false;
     public bool showAxisFeature = false;
     RetargetingMap rootMap;
-    bool initialized = false;
 
 
     void Start()
@@ -47,7 +46,7 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
         SetTransforms();
     }
 
-    public void SetTransforms()
+    override public void SetTransforms()
     {
         _transforms = GetComponentsInChildren<Transform>().ToList();
 
@@ -75,11 +74,13 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-
+        if(!active || inPipeline)return;
         //transform.position = src.GetGlobalPosition(Bones.Entity);
         if (!initialized) SetTransforms();
-        OrientToTarget();
+        UpdatePose();
     }
+
+
     public Quaternion RetargetRotation(Quaternion srcRotation, RetargetingMap m)
     {
 
@@ -97,7 +98,7 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
         return rotation;
     }
 
-    public void OrientToTarget()
+    override public void UpdatePose()
     {
         foreach (var m in retargetingMap)
         {
@@ -173,7 +174,7 @@ public class MMRuntimeRetargetingV1 : MonoBehaviour
     public void ResetToIdle()
     {
         src.ResetToIdle();
-        OrientToTarget();
+        UpdatePose();
     }
 }
 }
