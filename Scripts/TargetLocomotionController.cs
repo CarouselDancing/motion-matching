@@ -51,6 +51,7 @@ public class TargetLocomotionController : MMPoseProvider
         float interval = 1.0f / FPS;
         syncTimer = interval;
         prediction = false;
+        frameIdx = settings.startFrameIdx;
 
     }
 
@@ -102,15 +103,7 @@ public class TargetLocomotionController : MMPoseProvider
 
         frameIdx++;//prevents getting stuck
 
-        bool end_of_anim = false;
-        try
-        {
-            end_of_anim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
-        }
-        catch (Exception e)
-        {
-
-        }
+        bool end_of_anim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
 
         if (end_of_anim || forceSearchTimer <= 0.0f)
         {
@@ -122,7 +115,6 @@ public class TargetLocomotionController : MMPoseProvider
         {
             prediction = false;
         }
-        frameIdx = mm.trajectoryIndexClamp(frameIdx, 1);
         SetPose();
     
 

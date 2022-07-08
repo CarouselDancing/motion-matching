@@ -376,8 +376,7 @@ public class MMDatabase
             }
         }
 
-        throw new Exception();
-        return -1;
+        return frame;
     }
 
     void ComputeTrajectoryPositionFeature(ref int offset, int boneIdx, float weight)
