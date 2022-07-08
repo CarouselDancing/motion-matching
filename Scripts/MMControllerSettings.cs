@@ -20,6 +20,7 @@ public class MMControllerSettigs
     public int predictionDistance = 20;
     public float maxSpeed = 2.5f;
     public int startFrameIdx = 0;
+    public int speedFactor = 2;
 }
 
 }

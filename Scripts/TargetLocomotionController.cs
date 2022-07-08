@@ -194,8 +194,8 @@ public class TargetLocomotionController : MMPoseProvider
             globalStickDir = delta.normalized;
         }
         
-        forwardSpeed = Mathf.Min(Mathf.Abs(localDelta.z),settings.maxSpeed);
-        sideSpeed = Mathf.Min(Mathf.Abs(localDelta.x),settings.maxSpeed);
+        forwardSpeed = Mathf.Min(settings.speedFactor*Mathf.Abs(localDelta.z),settings.maxSpeed);
+        sideSpeed = Mathf.Min(settings.speedFactor*Mathf.Abs(localDelta.x),settings.maxSpeed);
         
         var localStickDir = Quaternion.Inverse(poseState.simulationRotation) * globalStickDir;
         // Scale stick by forward, sideways and backwards speeds
