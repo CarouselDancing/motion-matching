@@ -102,9 +102,9 @@ public class LocomotionController : MMPoseProvider
 
         frameIdx++;//prevents getting stuck
         
-        bool end_of_anim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
+        bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
 
-        if (end_of_anim || forceSearchTimer <= 0.0f)
+        if (endOfAnim || forceSearchTimer <= 0.0f)
         {
             FindTransition();
             forceSearchTimer = settings.forceSearchTime;

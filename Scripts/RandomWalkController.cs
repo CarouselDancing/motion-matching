@@ -87,15 +87,8 @@ public class RandomWalkController : MMPoseProvider
         {
             forceSearchTimer -= interval;
         }
-        bool end_of_anim = false;
-        try
-        {
-            end_of_anim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
-        }
-        catch (Exception e)
-        {
-
-        }
+        bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
+      
         //poseState.simulationPosition += poseState.simulationRotation*poseState.simulationVelocity*interval;
         //poseState.simulationRotation = Quat.from_scaled_angle_axis(poseState.simulationAV * interval) * poseState.simulationRotation;
 
@@ -109,7 +102,7 @@ public class RandomWalkController : MMPoseProvider
         simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, desiredVelocity, settings.simulationVelocityHalflife, interval);
         simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, desiredRotation, settings.simulationRotationHalflife, interval);
 
-        if (end_of_anim || forceSearchTimer <= 0.0f)
+        if (endOfAnim || forceSearchTimer <= 0.0f)
         {
             //FindTransition();
             forceSearchTimer = settings.forceSearchTime;

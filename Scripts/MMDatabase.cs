@@ -375,7 +375,8 @@ public class MMDatabase
                 return Mathf.Clamp(frame + offset, rangeStart[i], rangeStop[i] - 1);
             }
         }
-
+        if(frame < 0) frame = 0;
+        if(frame > nFrames) frame = nFrames-1;
         return frame;
     }
 

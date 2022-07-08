@@ -103,9 +103,9 @@ public class TargetLocomotionController : MMPoseProvider
 
         frameIdx++;//prevents getting stuck
 
-        bool end_of_anim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
-
-        if (end_of_anim || forceSearchTimer <= 0.0f)
+        bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
+        
+        if (endOfAnim || forceSearchTimer <= 0.0f)
         {
             FindTransition();
             forceSearchTimer = settings.forceSearchTime;
