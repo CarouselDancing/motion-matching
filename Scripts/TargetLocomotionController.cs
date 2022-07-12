@@ -214,7 +214,9 @@ public class TargetLocomotionController : MMPoseProvider
 
             //var cameraAngles = cameraController.PredictRotation(dt);
             //var cameraRot = Quaternion.AngleAxis(cameraAngles.y, new Vector3(0, 1, 0));
-            return target.rotation;
+            var rotation = target.rotation;
+            if (invertDirection) rotation *= Quaternion.Euler(0,180,0);
+            return rotation;
         }else{
             return poseState.simulationRotation; // return current rotation
         }
