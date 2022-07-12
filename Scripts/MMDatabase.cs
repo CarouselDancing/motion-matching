@@ -395,15 +395,7 @@ public class MMDatabase
             var delta0 = rootInvRot * (bonePositions[t0, boneIdx] - bonePositions[i, boneIdx]);
             var delta1 = rootInvRot * (bonePositions[t1, boneIdx] - bonePositions[i, boneIdx]);
             var delta2 = rootInvRot * (bonePositions[t2, boneIdx] - bonePositions[i, boneIdx]);
-            if (i == 0)
-            {
-                UnityEngine.Debug.Log("t" + t0.ToString());
-                UnityEngine.Debug.Log("t" + delta0.ToString());
-                UnityEngine.Debug.Log("t1" + t1.ToString());
-                UnityEngine.Debug.Log("t1" + delta1.ToString());
-                UnityEngine.Debug.Log("t2" + t2.ToString());
-                UnityEngine.Debug.Log("t2" + delta2.ToString());
-            }
+        
             features[i, offset + 0] = delta0.x;
             features[i, offset + 1] = delta0.z;
             features[i, offset + 2] = delta1.x;
