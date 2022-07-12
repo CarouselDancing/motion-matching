@@ -40,7 +40,7 @@ public class TargetLocomotionController : MMPoseProvider
     {
         
         var anim = GetComponent<Animator>();
-        anim.enabled = false;
+        if(anim != null) anim.enabled = false;
         poseState = mm.Load();
         poseState.simulationPosition = transform.position;
          poseState.simulationPosition.y = 0;
