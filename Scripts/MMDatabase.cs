@@ -325,18 +325,22 @@ public class MMDatabase
         int offset = 0;
         foreach (var f in settings.features)
         {
+            int boneIdx = f.boneIdx;
+            if (settings.version != MMDatabaseVersion.HOLDEN)
+                boneIdx = boneIndexMap[f.bone];
+            //UnityEngine.Debug.Log(f.bone.ToString()+" "+boneIdx.ToString());
             switch (f.type) {
                 case MMFeatureType.Position:
-                    ComputeBonePositionFeature(ref offset, f.boneIdx, f.weight);
+                    ComputeBonePositionFeature(ref offset, boneIdx, f.weight);
                     break;
                 case MMFeatureType.Velocity:
-                    ComputeBoneVelocityFeature(ref offset, f.boneIdx, f.weight);
+                    ComputeBoneVelocityFeature(ref offset, boneIdx, f.weight);
                     break;
                 case MMFeatureType.TrajectoryPositions:
-                    ComputeTrajectoryPositionFeature(ref offset, f.boneIdx, f.weight);
+                    ComputeTrajectoryPositionFeature(ref offset, boneIdx, f.weight);
                     break;
                 case MMFeatureType.TrajectoryDirections:
-                    ComputeTrajectoryDirectionFeature(ref offset, f.boneIdx, f.weight);
+                    ComputeTrajectoryDirectionFeature(ref offset, boneIdx, f.weight);
                     break;
             }
             
