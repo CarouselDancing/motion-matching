@@ -39,7 +39,8 @@ public class LocomotionController : MMPoseProvider
     float sideSpeed;
     public bool invertDirection;
 
-    
+    Quaternion _invertRotation = Quaternion.Euler(0,180,0);
+
     void Start()
     {
         
@@ -103,13 +104,9 @@ public class LocomotionController : MMPoseProvider
         simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, desiredVelocity, settings.simulationVelocityHalflife, dt);
         simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, desiredRotation, settings.simulationRotationHalflife, dt);
 
-        frameIdx++;//prevents getting stuck
         
         bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
-        if(frameIdx > mm.database.nFrames) {
-            forceSearchTimer = 0;
-            frameIdx = frameIdx-1;
-        }
+  
 
         if (endOfAnim || forceSearchTimer <= 0.0f)
         {
@@ -123,7 +120,11 @@ public class LocomotionController : MMPoseProvider
         }
         SetPose();
 
-
+        frameIdx++;//prevents getting stuck
+        if(frameIdx > mm.database.nFrames) {
+            forceSearchTimer = 0;
+            frameIdx = frameIdx-1;
+        }
         transform.position = poseState.simulationPosition;
         transform.rotation = poseState.simulationRotation;
 
@@ -213,7 +214,7 @@ public class LocomotionController : MMPoseProvider
             var cameraAngles = cameraController.PredictRotation(dt);
             rotation = Quaternion.AngleAxis(cameraAngles.y, new Vector3(0, 1, 0));
         }
-        if (invertDirection) rotation *= Quaternion.Euler(0,180,0);
+        if (invertDirection) rotation *= _invertRotation;
         
         return rotation;
     }
@@ -237,6 +238,7 @@ public class LocomotionController : MMPoseProvider
             trajectoryDesiredVel[i] = UpdateDesiredVelocity(i*dt);
         }
     }
+
     void UpdatePredictedRotationTrajectory(float dt)
     {
         for (int i = 0; i < trajectoryPos.Count; i++)

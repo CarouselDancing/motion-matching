@@ -36,6 +36,8 @@ public class TargetLocomotionController : MMPoseProvider
     public bool useMotionVelocity;
     public bool invertDirection;
 
+    Quaternion _invertRotation = Quaternion.Euler(0,180,0);
+
     void Start()
     {
         
@@ -103,11 +105,6 @@ public class TargetLocomotionController : MMPoseProvider
 
         bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
         
-        if(frameIdx > mm.database.nFrames) {
-            forceSearchTimer = 0;
-            frameIdx = frameIdx-1;
-        }
-
         if (endOfAnim || forceSearchTimer <= 0.0f)
         {
             FindTransition();
@@ -123,6 +120,11 @@ public class TargetLocomotionController : MMPoseProvider
         refPose.SetState(mm.database, frameIdx, false);
 
         frameIdx++;//prevents getting stuck
+
+        if(frameIdx > mm.database.nFrames) {
+            forceSearchTimer = 0;
+            frameIdx = frameIdx-1;
+        }
 
         transform.position = poseState.simulationPosition;
         transform.rotation = poseState.simulationRotation;
@@ -162,12 +164,10 @@ public class TargetLocomotionController : MMPoseProvider
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(poseState.simulationPosition, poseState.simulationPosition + desiredVelocity * 2);
         drawTrajectory(trajectoryPos);
-        if (poseState!= null && mm.settings.databaseType == MMDatabaseType.Trajectory){
-            Gizmos.color = Color.red;
-            mm.GetFeatureTrajectory(poseState, frameIdx, ref featureTrajectoryPos);
-            drawTrajectory(featureTrajectoryPos);
-        }
         Gizmos.color = Color.green;
+        Vector3 motionVelocity = poseState.motionVelocity;
+        Vector3 pos = poseState.simulationPosition;
+        Gizmos.DrawLine(pos, pos + motionVelocity * 10);
         if (prediction)
         {
             Gizmos.color = Color.red;
@@ -175,15 +175,21 @@ public class TargetLocomotionController : MMPoseProvider
         if (poseState!= null) poseState.Draw(settings.visScale);
 
         Gizmos.color = Color.yellow;
-        if (refPose != null) refPose.Draw(settings.visScale);
+        if (refPose != null) {
+            refPose.Draw(settings.visScale);
 
-        Gizmos.color = Color.red;
-        var motionVelocity = poseState.simulationRotation * poseState.motionVelocity;
-        Gizmos.DrawLine(poseState.simulationPosition, poseState.simulationPosition + motionVelocity * 10);
-
+            if (mm.settings.databaseType == MMDatabaseType.Trajectory){
+                Gizmos.color = Color.red;
+                mm.GetFeatureTrajectory(refPose, frameIdx, ref featureTrajectoryPos);
+                drawTrajectory(featureTrajectoryPos);
+                Gizmos.color = Color.red;
+                motionVelocity = refPose.motionRotation * refPose.motionVelocity;
+                pos = refPose.bonePositions[0];
+                Gizmos.DrawLine(pos, pos + motionVelocity * 10);
+            }
+        }
     }
 
-   
 
     Vector3 UpdateDesiredVelocity(float dt)
     {
@@ -243,8 +249,7 @@ public class TargetLocomotionController : MMPoseProvider
             trajectoryDesiredRot[i] = UpdateDesiredRotation(desiredVelocity, dt*i);
         }
     }
-
-
+    
     void UpdateDesiredVelocityTrajectory(float dt)
     {
         trajectoryDesiredVel[0] = desiredVelocity;
@@ -253,6 +258,7 @@ public class TargetLocomotionController : MMPoseProvider
             trajectoryDesiredVel[i] = UpdateDesiredVelocity(i*dt);
         }
     }
+
     void UpdatePredictedRotationTrajectory(float dt)
     {
         for (int i = 0; i < trajectoryPos.Count; i++)
