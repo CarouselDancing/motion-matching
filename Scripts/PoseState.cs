@@ -19,6 +19,7 @@ public class PoseState
     public Vector3 simulationAV;
     public Vector3 motionVelocity;
     public Vector3 motionAV;
+    public Quaternion motionRotation;
     public int nBones;
     public int[] boneParents;
     public Vector3[] bonePositions;
@@ -75,9 +76,9 @@ public class PoseState
             bonePositions[i] = db.bonePositions[frameIdx, i];
             boneRotations[i] = db.boneRotations[frameIdx, i];
         }
-        var invRootRot = Quaternion.Inverse(db.boneRotations[i, 0]);
-        motionVelocity = invRootRot * db.boneVelocities[frameIdx, 0];
-        motionAV = invRootRot * db.boneAngularVelocities[frameIdx, 0];
+        motionRotation = db.boneRotations[frameIdx, 0];
+        motionVelocity = Quaternion.Inverse(motionRotation) * db.boneVelocities[frameIdx, 0];
+        motionAV = Quaternion.Inverse(motionRotation) * db.boneAngularVelocities[frameIdx, 0];
         if (useSim && setSimVelocity)
         {
             simulationVelocity = motionVelocity;
