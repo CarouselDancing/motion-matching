@@ -37,11 +37,14 @@ public class LocomotionController : MMPoseProvider
     List<Vector3> featureTrajectoryPos = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
     float forwardSpeed;
     float sideSpeed;
+    public bool invertDirection;
+
+    
     void Start()
     {
         
         var anim = GetComponent<Animator>();
-        anim.enabled = false;
+        if(anim != null) anim.enabled = false;
         poseState = mm.Load();
         poseState.simulationPosition = transform.position;
         poseState.simulationPosition.y = 0;
@@ -103,6 +106,10 @@ public class LocomotionController : MMPoseProvider
         frameIdx++;//prevents getting stuck
         
         bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
+        if(frameIdx > mm.database.nFrames) {
+            forceSearchTimer = 0;
+            frameIdx = frameIdx-1;
+        }
 
         if (endOfAnim || forceSearchTimer <= 0.0f)
         {
@@ -194,20 +201,21 @@ public class LocomotionController : MMPoseProvider
 
     Quaternion UpdateDesiredRotation(Vector3 desiredVelocity, float dt)
     {
+        Quaternion rotation;
         //var angles = Mathf.Deg2Rad * camera.PredictRotation(dt);
         if (Vector3.Magnitude(desiredVelocity ) > 0){ 
             var direction = desiredVelocity.normalized;
             var a = Mathf.Rad2Deg * Mathf.Atan2(direction.x, direction.z);
-            return Quaternion.AngleAxis(a, new Vector3(0, 1, 0));
+            rotation = Quaternion.AngleAxis(a, new Vector3(0, 1, 0));
         }
         else
         {
-
             var cameraAngles = cameraController.PredictRotation(dt);
-            var cameraRot = Quaternion.AngleAxis(cameraAngles.y, new Vector3(0, 1, 0));
-            return cameraRot;
+            rotation = Quaternion.AngleAxis(cameraAngles.y, new Vector3(0, 1, 0));
         }
+        if (invertDirection) rotation *= Quaternion.Euler(0,180,0);
         
+        return rotation;
     }
 
     void UpdateDesiredRotationTrajectory(float dt)
