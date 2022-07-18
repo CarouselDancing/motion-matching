@@ -229,6 +229,176 @@ Transform:
   m_Father: {fileID: 1744263232}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &686267992 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6128006119604628154, guid: 693373d130c5aa34eb219e691baf2036, type: 3}
+  m_PrefabInstance: {fileID: 6470094627479682993}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &686267993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 686267992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fb200d6739eaa24d998a576b428340b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  active: 1
+  inPipeline: 0
+  src: {fileID: 1744263233}
+  retargetingMap:
+  - bone: 55
+    srcUp: {x: 0, y: 1, z: 0}
+    srcSide: {x: 1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 0
+    srcUp: {x: 0, y: 1, z: 0}
+    srcSide: {x: 1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 7
+    srcUp: {x: 0, y: 1, z: 0}
+    srcSide: {x: 1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 8
+    srcUp: {x: 0, y: 0.8, z: 0.2}
+    srcSide: {x: 1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 9
+    srcUp: {x: 0, y: 1, z: 0}
+    srcSide: {x: 1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 10
+    srcUp: {x: 0, y: 1, z: 0}
+    srcSide: {x: 1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 11
+    srcUp: {x: -1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: 1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 12
+    srcUp: {x: 1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: -1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 13
+    srcUp: {x: -1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: 1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 14
+    srcUp: {x: 1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: -1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 15
+    srcUp: {x: -1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: 1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 16
+    srcUp: {x: 1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: -1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 17
+    srcUp: {x: -1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: 1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 18
+    srcUp: {x: 1, y: 0, z: 0}
+    srcSide: {x: 0, y: 0, z: -1}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 1
+    srcUp: {x: 0, y: -1, z: 0}
+    srcSide: {x: -1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 2
+    srcUp: {x: 0, y: -1, z: 0}
+    srcSide: {x: -1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 3
+    srcUp: {x: 0, y: -1, z: 0}
+    srcSide: {x: -1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 4
+    srcUp: {x: 0, y: -1, z: 0}
+    srcSide: {x: -1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 5
+    srcUp: {x: 0, y: -0.1, z: 0.3}
+    srcSide: {x: -1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  - bone: 6
+    srcUp: {x: 0, y: -0.1, z: 0.3}
+    srcSide: {x: -1, y: 0, z: 0}
+    dstUp: {x: 0, y: 1, z: 0}
+    dstSide: {x: 1, y: 0, z: 0}
+    dstT: {fileID: 0}
+    active: 1
+  visLength: 0.07
+  rootName: 
+  rootOffset: {x: 0, y: 0, z: 0}
+  bringToLocal: 1
+  mirror: 0
+  showSrcGizmos: 1
+  showDstGizmos: 1
+  automatic: 1
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -746,7 +916,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6470094628056537068, guid: 693373d130c5aa34eb219e691baf2036, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6470094628056537068, guid: 693373d130c5aa34eb219e691baf2036, type: 3}
       propertyPath: retargetingMap.Array.data[3].srcUp.y
@@ -928,5 +1098,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6470094628056537068, guid: 693373d130c5aa34eb219e691baf2036, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 693373d130c5aa34eb219e691baf2036, type: 3}
