@@ -12,7 +12,7 @@ public class LocomotionController : MMPoseProvider
 {
 
     public PlayerInteractionZone interaction;
-    PoseState refPose; 
+    protected PoseState refPose; 
     public MMControllerSettigs settings;
     public CameraController cameraController;
     public Vector3 stickDir;
@@ -20,26 +20,29 @@ public class LocomotionController : MMPoseProvider
     public int frameIdx = 0;
     public float FPS = 60;
     public bool active = true;
-    float syncTimer = 0;
-    Vector3 desiredVelocity;
+    protected float syncTimer = 0;
+    protected Vector3 desiredVelocity;
     public Quaternion desiredRotation;
 
-    float forceSearchTimer = 0.1f;
-    List<Vector3> trajectoryDesiredVel = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
-    List<Quaternion> trajectoryDesiredRot = new List<Quaternion>() { new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1) };
+    protected float forceSearchTimer = 0.1f;
+    protected List<Vector3> trajectoryDesiredVel = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
+    protected List<Quaternion> trajectoryDesiredRot = new List<Quaternion>() { new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1) };
 
-    List<Vector3> trajectoryPos = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
-    List<Vector3> trajectoryVel = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
-    List<Vector3> trajectoryAcc = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
-    List<Quaternion> trajectoryRot = new List<Quaternion>() { new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1) };
-    List<Vector3> trajectoryAV = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
+    protected List<Vector3> trajectoryPos = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
+    protected List<Vector3> trajectoryVel = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
+    protected List<Vector3> trajectoryAcc = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
+    protected List<Quaternion> trajectoryRot = new List<Quaternion>() { new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1) };
+    protected List<Vector3> trajectoryAV = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
 
-    List<Vector3> featureTrajectoryPos = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
-    float forwardSpeed;
-    float sideSpeed;
+    protected List<Vector3> featureTrajectoryPos = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0) };
+    protected float forwardSpeed;
+    protected float sideSpeed;
     public bool invertDirection;
 
-    Quaternion _invertRotation = Quaternion.Euler(0,180,0);
+    protected Quaternion _invertRotation = Quaternion.Euler(0,180,0);
+    public bool useMotionVelocity;
+    public bool useMotionAngularVelocity;
+    public float velocityScale = 1f;
 
     void Start()
     {
@@ -56,11 +59,12 @@ public class LocomotionController : MMPoseProvider
         float interval = 1.0f / FPS;
         syncTimer = interval;
         prediction = false;
+        frameIdx = settings.startFrameIdx;
 
     }
 
 
-    void Update()
+    /*void Update()
     {
 
         if (!active) return;
@@ -71,14 +75,17 @@ public class LocomotionController : MMPoseProvider
         }
         syncTimer = interval;
         Step(interval);
+    }*/
+    void FixedUpdate(){
+        Step(Time.fixedDeltaTime);
     }
 
-    void Step(float interval)
+    virtual public void Step(float dt)
     {
 
         if (forceSearchTimer > 0)
         {
-            forceSearchTimer -= interval;
+            forceSearchTimer -= dt;
         }
         var y = Input.GetAxis("Vertical");
         var x = Input.GetAxis("Horizontal");
@@ -90,7 +97,7 @@ public class LocomotionController : MMPoseProvider
 
         desiredRotation = UpdateDesiredRotation(desiredVelocity, 0);
 
-        float predictionDt = interval * settings.predictionDistance;
+        float predictionDt = dt * settings.predictionDistance;
 
         UpdateDesiredRotationTrajectory(predictionDt);
         UpdatePredictedRotationTrajectory(predictionDt);
@@ -100,14 +107,23 @@ public class LocomotionController : MMPoseProvider
 
 
         //update simulation
-        float dt = interval;
-        simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, desiredVelocity, settings.simulationVelocityHalflife, dt);
-        simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, desiredRotation, settings.simulationRotationHalflife, dt);
-
-        
+        if(useMotionVelocity){
+            var velocity = poseState.simulationRotation* poseState.motionVelocity*dt;
+            
+            poseState.simulationPosition += velocityScale * velocity;
+          
+        }else{
+            simulationPositionsUpdate(ref poseState.simulationPosition, ref poseState.simulationVelocity, ref poseState.simulationAcceleration, desiredVelocity, settings.simulationVelocityHalflife, dt);
+           
+        }
+        if(useMotionAngularVelocity){
+            var av = poseState.simulationRotation* poseState.motionAV*dt;
+            poseState.simulationRotation *= Quaternion.Euler(av.x*Mathf.Rad2Deg, av.y*Mathf.Rad2Deg, av.z*Mathf.Rad2Deg);
+        }else{
+            simulationRotationsUpdate(ref poseState.simulationRotation, ref poseState.simulationAV, desiredRotation, settings.simulationRotationHalflife, dt);
+        }
         bool endOfAnim = mm.trajectoryIndexClamp(frameIdx, 1) == frameIdx;
   
-
         if (endOfAnim || forceSearchTimer <= 0.0f)
         {
             FindTransition();
@@ -121,17 +137,22 @@ public class LocomotionController : MMPoseProvider
         SetPose();
 
         frameIdx++;//prevents getting stuck
-        if(frameIdx > mm.database.nFrames) {
-            forceSearchTimer = 0;
-            frameIdx = frameIdx-1;
-        }
+        verifyFrame();
         transform.position = poseState.simulationPosition;
         transform.rotation = poseState.simulationRotation;
 
     }
+    
+    protected void verifyFrame(){
+
+        if(frameIdx >= mm.database.nFrames) {
+            forceSearchTimer = 0;
+            frameIdx = frameIdx-1;
+        }
+    }
 
 
-    public void FindTransition()
+    virtual public void FindTransition()
     {
         int oldFrameIdx = frameIdx;
         frameIdx = mm.FindTransition(poseState, frameIdx, trajectoryPos, trajectoryRot);
@@ -147,7 +168,7 @@ public class LocomotionController : MMPoseProvider
         poseState.SetState(mm.database, frameIdx);
     }
 
-    void drawTrajectory(List<Vector3> trajectory)
+    protected void drawTrajectory(List<Vector3> trajectory)
     {
         for (int i = 0; i < trajectory.Count; i++)
         {
@@ -157,7 +178,7 @@ public class LocomotionController : MMPoseProvider
     }
 
   
-    public void OnDrawGizmos()
+    virtual public void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(poseState.simulationPosition, poseState.simulationPosition + desiredVelocity * 2);
@@ -177,7 +198,7 @@ public class LocomotionController : MMPoseProvider
 
    
 
-    Vector3 UpdateDesiredVelocity(float dt)
+    virtual public Vector3 UpdateDesiredVelocity(float dt)
     {
 
         var cameraAngles = cameraController.PredictRotation(dt);
@@ -200,7 +221,7 @@ public class LocomotionController : MMPoseProvider
         return poseState.simulationRotation * localStickDir;
     }
 
-    Quaternion UpdateDesiredRotation(Vector3 desiredVelocity, float dt)
+    virtual public Quaternion UpdateDesiredRotation(Vector3 desiredVelocity, float dt)
     {
         Quaternion rotation;
         //var angles = Mathf.Deg2Rad * camera.PredictRotation(dt);
@@ -219,7 +240,7 @@ public class LocomotionController : MMPoseProvider
         return rotation;
     }
 
-    void UpdateDesiredRotationTrajectory(float dt)
+    protected void UpdateDesiredRotationTrajectory(float dt)
     {
         trajectoryDesiredRot[0] = poseState.simulationRotation;
         trajectoryAV[0] = poseState.simulationAV;
@@ -230,7 +251,7 @@ public class LocomotionController : MMPoseProvider
     }
 
 
-    void UpdateDesiredVelocityTrajectory(float dt)
+    protected void UpdateDesiredVelocityTrajectory(float dt)
     {
         trajectoryDesiredVel[0] = desiredVelocity;
         for (int i = 1; i < trajectoryVel.Count; i++)
@@ -239,7 +260,7 @@ public class LocomotionController : MMPoseProvider
         }
     }
 
-    void UpdatePredictedRotationTrajectory(float dt)
+    protected void UpdatePredictedRotationTrajectory(float dt)
     {
         for (int i = 0; i < trajectoryPos.Count; i++)
         {
@@ -253,7 +274,7 @@ public class LocomotionController : MMPoseProvider
         }
     }
 
-    void UpdatePredictedPositionTrajectory(float dt)
+    protected void UpdatePredictedPositionTrajectory(float dt)
     {
         trajectoryPos[0] = poseState.simulationPosition;
         trajectoryVel[0] = poseState.simulationVelocity;
@@ -270,11 +291,11 @@ public class LocomotionController : MMPoseProvider
     }
 
 
-    void simulationRotationsUpdate(
-    ref List<Quaternion> rotations,
-    ref List<Vector3> avs,
-    List<Quaternion> desiredRotation,
-    int index, float halflife, float dt)
+    protected void simulationRotationsUpdate(
+        ref List<Quaternion> rotations,
+        ref List<Vector3> avs,
+        List<Quaternion> desiredRotation,
+        int index, float halflife, float dt)
     {
         float y = Utils.halflife_to_damping(halflife) / 2.0f;
 
@@ -297,7 +318,7 @@ public class LocomotionController : MMPoseProvider
 
 
     // Taken from https://theorangeduck.com/page/spring-roll-call#controllers
-    void simulationPositionsUpdate(
+    protected void simulationPositionsUpdate(
         ref List<Vector3> position,
         ref List<Vector3> velocity,
         ref List<Vector3> acceleration,

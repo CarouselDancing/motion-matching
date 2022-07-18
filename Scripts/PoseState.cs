@@ -79,6 +79,7 @@ public class PoseState
         motionRotation = db.boneRotations[frameIdx, 0];
         motionVelocity = Quaternion.Inverse(motionRotation) * db.boneVelocities[frameIdx, 0];
         motionAV = Quaternion.Inverse(motionRotation) * db.boneAngularVelocities[frameIdx, 0];
+        motionAV = -motionAV;
         if (useSim && setSimVelocity)
         {
             simulationVelocity = motionVelocity;

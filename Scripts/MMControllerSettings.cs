@@ -19,6 +19,7 @@ public class MMControllerSettigs
     public float simulationRotationHalflife = 0.27f;
     public int predictionDistance = 20;
     public float maxSpeed = 2.5f;
+    public float minSpeed = 0.1f;
     public int startFrameIdx = 0;
     public int speedFactor = 2;
 }
