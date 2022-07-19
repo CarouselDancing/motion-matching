@@ -25,7 +25,7 @@ public class MMRuntimeRetargetingV2 : CharacterPoser
     public MMPoseProvider src;
     public List<RetargetingMap> retargetingMap;
     public float visLength = 10;
-    public string rootName;
+    public HumanBodyBones rooBone = HumanBodyBones.LastBone;
     public Vector3 rootOffset;
     public bool bringToLocal = true;
     public bool mirror = false;
@@ -52,7 +52,7 @@ public class MMRuntimeRetargetingV2 : CharacterPoser
         for (int i =0;i <retargetingMap.Count; i++)
         {
             
-            if (retargetingMap[i].bone == HumanBodyBones.LastBone)
+            if (retargetingMap[i].bone == rooBone)
             {
 
                 retargetingMap[i].dstT = transform;
@@ -107,7 +107,6 @@ public class MMRuntimeRetargetingV2 : CharacterPoser
         Vector3 srcPosition;
         foreach (var m in retargetingMap)
         {
-            if (m.bone == HumanBodyBones.LastBone) continue;
             if (! m.active) continue;
 
             var dstT = m.dstT;
@@ -117,11 +116,11 @@ public class MMRuntimeRetargetingV2 : CharacterPoser
                 continue;
             }
             var rotation = RetargetRotation(srcRotation, m);
-            if (m.bone == HumanBodyBones.Hips)
+            if (m.bone == rooBone)
             {
                 dstT.rotation = rotation.normalized;
                 src.GetGlobalPosition(m.bone, out srcPosition);
-                dstT.position = srcPosition;
+                dstT.position = srcPosition + rootOffset;
             }
             else
             {
