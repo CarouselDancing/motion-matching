@@ -43,6 +43,7 @@ public class LocomotionController : MMPoseProvider
     public bool useMotionVelocity;
     public bool useMotionAngularVelocity;
     public float velocityScale = 1f;
+    public bool syncFPS;
 
     void Start()
     {
@@ -56,28 +57,24 @@ public class LocomotionController : MMPoseProvider
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
 
-        float interval = 1.0f / FPS;
-        syncTimer = interval;
+        syncTimer = 1.0f / FPS;
         prediction = false;
         frameIdx = settings.startFrameIdx;
+        forceSearchTimer = settings.forceSearchTime;
 
     }
-
-
-    /*void Update()
-    {
-
-        if (!active) return;
-        float interval = 1.0f / FPS;
-        if (syncTimer > 0) { 
-            syncTimer -= Time.deltaTime;
-            return;
-        }
-        syncTimer = interval;
-        Step(interval);
-    }*/
     void FixedUpdate(){
-        Step(Time.fixedDeltaTime);
+        if(syncFPS){
+            syncTimer = 1.0f / FPS;
+            int nSteps = (int)(Time.fixedDeltaTime/syncTimer);
+            for(int i =0; i < nSteps; i++) Step(syncTimer);
+        }
+        else{
+            Step(Time.fixedDeltaTime);
+        }
+        SetPose();
+    
+        refPose.SetState(mm.database, frameIdx, false);
     }
 
     virtual public void Step(float dt)
@@ -134,7 +131,6 @@ public class LocomotionController : MMPoseProvider
         {
             prediction = false;
         }
-        SetPose();
 
         frameIdx++;//prevents getting stuck
         verifyFrame();
@@ -157,7 +153,6 @@ public class LocomotionController : MMPoseProvider
         int oldFrameIdx = frameIdx;
         frameIdx = mm.FindTransition(poseState, frameIdx, trajectoryPos, trajectoryRot);
 
-        refPose.SetState(mm.database, frameIdx, false);
         if (mm.settings.databaseType == MMDatabaseType.Trajectory)
         mm.GetFeatureTrajectory(refPose, frameIdx, ref featureTrajectoryPos);
     }

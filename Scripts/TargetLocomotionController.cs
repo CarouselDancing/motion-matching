@@ -23,10 +23,10 @@ public class TargetLocomotionController : LocomotionController
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
 
-        float interval = 1.0f / FPS;
-        syncTimer = interval;
+        syncTimer = 1.0f / FPS;
         prediction = false;
         frameIdx = settings.startFrameIdx;
+        forceSearchTimer = settings.forceSearchTime;
 
     }
 
@@ -78,11 +78,10 @@ public class TargetLocomotionController : LocomotionController
         {
             prediction = false;
         }
-        SetPose();
     
         refPose.SetState(mm.database, frameIdx, false);
-
         frameIdx++;//prevents getting stuck
+     
         verifyFrame();
 
         transform.position = poseState.simulationPosition;
