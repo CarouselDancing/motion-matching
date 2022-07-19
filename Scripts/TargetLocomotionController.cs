@@ -32,20 +32,19 @@ public class TargetLocomotionController : LocomotionController
 
 
 
-    override public void Step(float interval)
+    override public void Step(float dt)
     {
 
         if (forceSearchTimer > 0)
         {
-            forceSearchTimer -= interval;
+            forceSearchTimer -= dt;
         }
-
 
         desiredVelocity = UpdateDesiredVelocity(0);
 
         desiredRotation = UpdateDesiredRotation(desiredVelocity, 0);
 
-        float predictionDt = interval * settings.predictionDistance;
+        float predictionDt = dt * settings.predictionDistance;
 
         UpdateDesiredRotationTrajectory(predictionDt);
         UpdatePredictedRotationTrajectory(predictionDt);
@@ -55,12 +54,11 @@ public class TargetLocomotionController : LocomotionController
 
 
         //update simulation
-        float dt = interval;
         Vector3 velocity = desiredVelocity;
         Quaternion rotation = desiredRotation;
         if(useMotionVelocity){
-            velocity = poseState.simulationRotation* poseState.motionVelocity*Time.deltaTime;
-            var av = poseState.simulationRotation* poseState.motionAV*Time.deltaTime;
+            velocity = poseState.simulationRotation* poseState.motionVelocity*dt;
+            var av = poseState.simulationRotation* poseState.motionAV*dt;
             poseState.simulationPosition += velocity*velocityScale;
             poseState.simulationRotation *= Quaternion.Euler(av.x*Mathf.Rad2Deg, av.y*Mathf.Rad2Deg, av.z*Mathf.Rad2Deg);
         }else{
