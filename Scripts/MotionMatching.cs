@@ -23,10 +23,12 @@ public class MotionMatching : MonoBehaviour
     public PoseState Load()
     {
         database = new MMDatabase(settings);
-       // var fullPath = Path.Combine(Application.streamingAssetsPath, filename);
+
+        // var fullPath = Path.Combine(Application.streamingAssetsPath, filename);
         //database.Load(fullPath);
         //state = new MotionState(database.nBones, database.boneParents);
         //state.SetState(database, frameIdx);
+
         database.LoadResource(filename);
         initialized = true;
         initialState = new PoseState(database.nBones, database.boneParents);

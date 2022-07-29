@@ -11,6 +11,13 @@ namespace MotionMatching{
 [Serializable]
 public class PoseState
 {
+    public bool useInterpolation;
+    public bool moveWithVelo;
+    public TargetLocomotionController tLC;
+    public Vector3 test;
+    public Quaternion q;
+    public float maxDegreesPerSecond;
+    public float[] AngularSpeeds;
 
     public Vector3 simulationPosition;
     public Vector3 simulationVelocity;
@@ -61,31 +68,86 @@ public class PoseState
         }
     }
 
-
+    
     public void SetState(MMDatabase db, int frameIdx, bool useSim = true, bool setSimVelocity = false)
     {
-        int i = 0;
-        if (useSim)
-        {
-            bonePositions[0] = simulationPosition;
-            boneRotations[0] = simulationRotation;
-            i = 1;
-        }
-        for (; i < nBones; i++)
-        {
-            bonePositions[i] = db.bonePositions[frameIdx, i];
-            boneRotations[i] = db.boneRotations[frameIdx, i];
-        }
-        motionRotation = db.boneRotations[frameIdx, 0];
-        motionVelocity = Quaternion.Inverse(motionRotation) * db.boneVelocities[frameIdx, 0];
-        motionAV = Quaternion.Inverse(motionRotation) * db.boneAngularVelocities[frameIdx, 0];
-        motionAV = -motionAV;
-        if (useSim && setSimVelocity)
-        {
-            simulationVelocity = motionVelocity;
-            simulationAV = motionAV;
-        }
-        UpdateFKBuffer();
+            int i = 0;
+            if (useSim)
+            {
+                //Vector3 vv = (simulationPosition - bonePositions[0]) * a;
+                bonePositions[0] = simulationPosition;
+                boneRotations[0] = simulationRotation;
+                i = 1;
+            }
+            i = useSim ? 1 : 0;
+
+            float maxAngle = float.MinValue;
+                float a = -1;
+            if (useInterpolation)
+            {
+                for (; i < nBones; i++)
+                {
+
+                        float angle = Quaternion.Angle(boneRotations[i], db.boneRotations[frameIdx, i]);
+                    if(maxAngle < angle)
+                        {
+                            maxAngle = angle;
+                            
+                            a = Mathf.Min(1, (maxDegreesPerSecond * Time.fixedDeltaTime) / angle);
+                        }
+                }
+            }
+
+            if (moveWithVelo)
+                tLC.velocityScale = Mathf.Min(2, Mathf.Max(0,a-0.1f) * 10);
+
+            i = useSim ? 1 : 0;
+
+            for (; i < nBones; i++)
+            {
+                if (useInterpolation)
+                {
+                    float angle = Quaternion.Angle(boneRotations[i], db.boneRotations[frameIdx, i]);
+                    float rotSpeed = angle / maxAngle * maxDegreesPerSecond * Time.fixedDeltaTime;
+
+                    bonePositions[i] = db.bonePositions[frameIdx, i];
+                    boneRotations[i] = Quaternion.RotateTowards(boneRotations[i], db.boneRotations[frameIdx, i], rotSpeed); ;// db.boneRotations[frameIdx, i];
+                }
+                else
+                {
+                    bonePositions[i] = db.bonePositions[frameIdx, i];
+                    boneRotations[i] = db.boneRotations[frameIdx, i];
+                }
+       
+            }
+
+
+            //if (moveWithVelo && useInterpolation && useSim)
+            //{
+            //    Debug.Log("A: " + a);
+            //    Vector3 vv = (bonePositions[0] - simulationPosition) * (1-a);
+            //    bonePositions[0] = simulationPosition +  vv;//simulationPosition;
+            //    boneRotations[0] = simulationRotation;
+
+            //}
+
+            int frameIdxMinusOne = frameIdx == 0 ? 0 : frameIdx - 1;
+            Vector3 v = Vector3.ProjectOnPlane(db.boneVelocities[frameIdxMinusOne, 1], Vector3.up);
+            
+            Debug.DrawRay(bonePositions[0], boneRotations[0] * Vector3.forward, Color.red);
+            Debug.DrawRay(bonePositions[0], v, Color.magenta);
+
+            motionRotation = db.boneRotations[frameIdx, 0];
+            motionVelocity = Quaternion.Inverse(motionRotation) * db.boneVelocities[frameIdx, 0];
+            motionAV = Quaternion.Inverse(motionRotation) * db.boneAngularVelocities[frameIdx, 0];
+            motionAV = -motionAV;
+
+            if (useSim && setSimVelocity)
+            {
+                simulationVelocity = motionVelocity;
+                simulationAV = motionAV;
+            }
+            UpdateFKBuffer();
     }
 
     public void Interpolate(MMDatabase db, int frameIdx, bool useSim = true, bool setSimVelocity = false)
