@@ -20,6 +20,9 @@ public class TargetLocomotionController : LocomotionController
         poseState.simulationPosition = transform.position;
          poseState.simulationPosition.y = 0;
         poseState.simulationRotation = transform.rotation;
+
+            poseState.tLC = this;
+
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
 
