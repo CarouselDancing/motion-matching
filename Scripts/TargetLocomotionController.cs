@@ -9,6 +9,7 @@ namespace Carousel.MotionMatching{
 public class TargetLocomotionController : LocomotionController
 {
     public Transform target;
+    public MotionPrediction targetPrediction;
     public bool orientTowardsTarget;
 
     void Start()
@@ -141,8 +142,11 @@ public class TargetLocomotionController : LocomotionController
     {
         Vector3 localDelta = Vector3.zero;
         Vector3 globalStickDir = Vector3.zero;
-        if(target != null){
 
+        if(target != null){
+            Vector3 targetPosition = target.position;
+            targetPrediction = target.GetComponent<MotionPrediction>();
+            if(targetPrediction != null)targetPosition = targetPrediction.GetPredictedPosition();
             var delta = target.position- transform.position;
             delta.y =0;
             float distance = delta.magnitude;
@@ -182,9 +186,11 @@ public class TargetLocomotionController : LocomotionController
 
             //var cameraAngles = cameraController.PredictRotation(dt);
             //var cameraRot = Quaternion.AngleAxis(cameraAngles.y, new Vector3(0, 1, 0));
-            var rotation = target.rotation;
-            if (invertDirection) rotation *= Quaternion.Euler(0,180,0);
-            return rotation;
+            var targetRotation = target.rotation;
+            targetPrediction = target.GetComponent<MotionPrediction>();
+            if(targetPrediction != null)targetRotation = targetPrediction.GetPredictedRotation();
+            if (invertDirection) targetRotation *= Quaternion.Euler(0,180,0);
+            return targetRotation;
         }else{
             return poseState.simulationRotation; // return current rotation
         }
