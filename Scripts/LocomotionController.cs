@@ -54,6 +54,9 @@ public class LocomotionController : MMPoseProvider
         poseState.simulationPosition = transform.position;
         poseState.simulationPosition.y = 0;
         poseState.simulationRotation = transform.rotation;
+        poseState.maxDegreesPerSecond = settings.maxDegreesPerSecond;
+        poseState.useInterpolation = settings.useInterpolation;
+
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
 

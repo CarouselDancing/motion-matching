@@ -22,6 +22,9 @@ public class MMControllerSettigs
     public float minSpeed = 0.1f;
     public int startFrameIdx = 0;
     public int speedFactor = 2;
+    public bool useInterpolation = true;
+    public float maxDegreesPerSecond = 90f;
+
 }
 
 }

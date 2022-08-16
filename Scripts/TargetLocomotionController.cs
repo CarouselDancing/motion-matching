@@ -19,12 +19,14 @@ public class TargetLocomotionController : LocomotionController
         if(anim != null) anim.enabled = false;
         poseState = mm.Load();
         poseState.simulationPosition = transform.position;
-         poseState.simulationPosition.y = 0;
+        poseState.simulationPosition.y = 0;
         poseState.simulationRotation = transform.rotation;
-
-            poseState.tLC = this;
+        poseState.maxDegreesPerSecond = settings.maxDegreesPerSecond;
+        poseState.useInterpolation = settings.useInterpolation;
+        poseState.tLC = this;
 
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
+        
         mm.ComputeFeatures();
 
         syncTimer = 1.0f / FPS;
