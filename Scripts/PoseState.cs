@@ -11,13 +11,10 @@ namespace MotionMatching{
 [Serializable]
 public class PoseState
 {
-    public bool useInterpolation;
+    public bool useInterpolation = true;
     public bool moveWithVelo;
     public TargetLocomotionController tLC;
-    public Vector3 test;
-    public Quaternion q;
-    public float maxDegreesPerSecond;
-    public float[] AngularSpeeds;
+    public float maxDegreesPerSecond = 90f;
 
     public Vector3 simulationPosition;
     public Vector3 simulationVelocity;
@@ -33,6 +30,7 @@ public class PoseState
     public Quaternion[] boneRotations;
     public Vector3[] fkPositionBuffer;
     public Quaternion[] fkRotationBuffer;
+    public bool[] fkCalculated;
     public float yOffset = 0;
     public PoseState(int nBones, int[] boneParents, float yOffset =0)
     {
@@ -44,6 +42,7 @@ public class PoseState
         boneRotations = new Quaternion[nBones];
         fkPositionBuffer = new Vector3[nBones];
         fkRotationBuffer = new Quaternion[nBones];
+        fkCalculated = new bool[nBones];
         simulationRotation = Quaternion.identity;
     }
 
@@ -65,6 +64,7 @@ public class PoseState
             boneRotations[i] = other.boneRotations[i];
             fkPositionBuffer[i] = other.fkPositionBuffer[i];
             fkRotationBuffer[i] = other.fkRotationBuffer[i];
+            fkCalculated[i] = other.fkCalculated[i];
         }
     }
 
@@ -172,11 +172,21 @@ public class PoseState
         UpdateFKBuffer();
     }
 
-    void UpdateFKBuffer()
+   void UpdateFKBuffer()
     {
+            
         for (int i = 0; i < nBones; i++)
         {
-            ForwardKinematics(out fkPositionBuffer[i], out fkRotationBuffer[i], i);
+            fkCalculated[i] = false;
+        }
+            
+        for (int i = 0; i < nBones; i++)
+        {  
+            if(!fkCalculated[i]){
+                ForwardKinematics(out fkPositionBuffer[i], out fkRotationBuffer[i], i);
+                fkCalculated[i] = true;
+            }
+            
         }
     }
 
@@ -186,7 +196,15 @@ public class PoseState
         if (boneParents[boneIdx] != -1)
         {
             Vector3 parentPos; Quaternion parentRot;
-            ForwardKinematics(out parentPos, out parentRot, boneParents[boneIdx]);
+            var boneParentIdx = boneParents[boneIdx];
+            if(!fkCalculated[boneParentIdx]){
+                ForwardKinematics(out parentPos, out parentRot, boneParentIdx);
+                
+                fkCalculated[boneParentIdx] = true;
+            }else{
+                parentPos = bonePositions[boneParentIdx];
+                parentRot = fkRotationBuffer[boneParentIdx];
+            }
             pos = parentRot * bonePositions[boneIdx] + parentPos;
             rot = parentRot * boneRotations[boneIdx];
         }
