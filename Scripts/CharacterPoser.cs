@@ -10,4 +10,5 @@ abstract public class CharacterPoser : MonoBehaviour
     public bool inPipeline = false;
     abstract public void SetTransforms();
 
-    abstract public void UpdatePose();}
+    abstract public void UpdatePose();
+}
