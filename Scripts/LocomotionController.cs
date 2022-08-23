@@ -45,9 +45,11 @@ public class LocomotionController : MMPoseProvider
     public float velocityScale = 1f;
     public bool syncFPS;
 
+    public List<int> annotationConstraint = new List<int>(){0, 0};
+    public bool useAnnotationConstraint;
+
     void Start()
     {
-        
         var anim = GetComponent<Animator>();
         if(anim != null) anim.enabled = false;
         poseState = mm.Load();
@@ -60,6 +62,8 @@ public class LocomotionController : MMPoseProvider
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         mm.ComputeFeatures();
 
+        annotationConstraint = new List<int>();
+        for (int i = 0; i < mm.database.nAnnotations; i++)annotationConstraint.Add(0);
         syncTimer = 1.0f / FPS;
         prediction = false;
         frameIdx = settings.startFrameIdx;

@@ -18,7 +18,8 @@ public enum MMDatabaseType
 {
     Trajectory  = 0,
     Pose = 1,
-    Music =  2
+    Music =  2,
+    Annotation = 3
 }
 
 public enum MMFeatureType
@@ -26,7 +27,8 @@ public enum MMFeatureType
     Position,
     Velocity,
     TrajectoryPositions,
-    TrajectoryDirections
+    TrajectoryDirections,
+    Phase
 }
 
 
@@ -174,6 +176,7 @@ public class MMDatabase
     public int nFrames;
     public int nBones;
     public int nMusicDims;
+    public int nAnnotations;
     public Vector3[,] bonePositions; //offsets relative to parent
     public Vector3[,] boneVelocities; //velocites relative to parent coordinate system
     public Quaternion[,] boneRotations; //rotations relative to parent coordinate system
@@ -182,7 +185,12 @@ public class MMDatabase
     public int[] rangeStart;
     public int[] rangeStop;
     public bool[,] contactStates;
-    public float[,] musicFeatures;
+    public float[] phaseData;
+    public List<string> annotationKeys;
+    public List<string> annotationValues;
+    public int[,] annotationMatrix;
+
+
 
     public float[,] features;
     public float[] featuresMean;
@@ -199,9 +207,29 @@ public class MMDatabase
                                                                                                      { HumanBodyBones.Hips, "Hips" },};
     public Dictionary<HumanBodyBones, int> boneIndexMap;
     public List<HumanBodyBones> boneArray;
+
+    public bool useConstraint;
+    int[] constraint;
+
     public MMDatabase(MMSettings _settings)
     {
         settings = _settings;
+    }
+    
+    public void SetAnnotationConstraint(int[] constraint){
+        this.constraint = constraint;
+        useConstraint = true;
+    }
+
+    public void RemoveAnnotationConstraint(){
+        this.constraint = constraint;
+        useConstraint = false;
+    }
+
+    public void GetAnnotationConstraint(ref List<int> constraint, int frameIdx){
+        for (int i = 0; i < nAnnotations; i++){
+            constraint[i] = annotationMatrix[i, frameIdx];
+        }
     }
 
     public void CopyFeatureUnnormalized(ref float[] result, ref int offset, int size, int frameIdx)
@@ -256,7 +284,14 @@ public class MMDatabase
             int rangeEnd = rangeStop[rIdx] - settings.ignoreRangeEnd;
             while (frameIdx < rangeEnd)
             {
-                float cost = GetDistance(queryNormalized, frameIdx);
+                float cost = Mathf.Infinity;
+                if (useConstraint){
+                    if (checkConstraint(frameIdx)){
+                        cost = GetDistance(queryNormalized, frameIdx);
+                    }
+                }else{
+                    cost = GetDistance(queryNormalized, frameIdx);
+                }
                 if (cost < bestCost)
                 {
                     bestIdx = frameIdx;
@@ -267,6 +302,15 @@ public class MMDatabase
         }
         //Debug.Log("best cost"+ bestCost.ToString() + " < " +  initialCost.ToString());
         return bestIdx;
+    }
+
+    public bool checkConstraint(int index){
+        int distance = 0;
+        for (int i = 0; i < nAnnotations; i++)
+        {
+            distance += constraint[i] - annotationMatrix[i, index];
+        }
+        return distance == 0;
     }
 
     public int SearchOld(float[] query, int bestIdx = -1)
@@ -309,8 +353,11 @@ public class MMDatabase
 
         nFeatures = 0;
         foreach(var f in settings.features)
-        {
-            if (f.type == MMFeatureType.TrajectoryPositions || f.type == MMFeatureType.TrajectoryDirections)
+        {if (f.type == MMFeatureType.Phase)
+            {
+                nFeatures += 1;
+            }
+            else if (f.type == MMFeatureType.TrajectoryPositions || f.type == MMFeatureType.TrajectoryDirections)
             {
                 nFeatures += 6;
             }
@@ -330,6 +377,9 @@ public class MMDatabase
                 boneIdx = boneIndexMap[f.bone];
             //UnityEngine.Debug.Log(f.bone.ToString()+" "+boneIdx.ToString());
             switch (f.type) {
+                case MMFeatureType.Phase:
+                    CopyPhaseFeature(ref offset, f.weight);
+                    break;
                 case MMFeatureType.Position:
                     ComputeBonePositionFeature(ref offset, boneIdx, f.weight);
                     break;
@@ -429,6 +479,18 @@ public class MMDatabase
 
         normalizeFeature(offset, 6, weight);
         offset += 6;
+    }
+
+    void CopyPhaseFeature(ref int offset, float weight)
+    {
+
+        for (int i =0; i < nFrames; i++)
+        {
+            features[i, offset] = phaseData[i];
+        }
+
+        normalizeFeature(offset, 1, weight);
+        offset += 1;
     }
 
     void ComputeBonePositionFeature(ref int offset, int boneIdx, float weight)
@@ -660,21 +722,32 @@ public class MMDatabase
         }
         return boneRotations;
     }
-    float[,] LoadFloatArray(BinaryReader reader)
+    float[] LoadPhaseData(BinaryReader reader)
     {
         nFrames = reader.ReadInt32();
-        nMusicDims = reader.ReadInt32();
-
-        UnityEngine.Debug.Log("Load" + nFrames.ToString() + " " + nMusicDims.ToString());
-        float[,] floatArray = new float[nFrames, nMusicDims];
-        for (int i = 0; i < nFrames; i++)
-        {
-            for (int j = 0; j < nMusicDims; j++)
-            {
-                floatArray[i, j] = reader.ReadSingle();
-            }
+        int nPhaseDims = reader.ReadInt32();
+        UnityEngine.Debug.Log("Load" + nFrames.ToString());
+        float[] floatArray = new float[nFrames];
+        for (int i = 0; i < nFrames; i++){
+            floatArray[i] = reader.ReadSingle();
         }
         return floatArray;
+    }
+
+    void LoadAnnotationData(BinaryReader reader){
+        
+        annotationKeys = LoadNames(reader);
+        annotationValues = LoadNames(reader);
+        int nFrames = reader.ReadInt32();
+        nAnnotations = reader.ReadInt32();
+        annotationMatrix = new int[nAnnotations, nFrames];
+        for (int i = 0; i < nFrames; i++)
+        {
+            for (int j = 0; j < nAnnotations; j++)
+            {
+                annotationMatrix[j, i] = reader.ReadInt32();
+            }
+        }
     }
 
     int[] LoadArray1D(BinaryReader reader)
@@ -688,13 +761,28 @@ public class MMDatabase
         }
         return array;
     }
+    
     List<string> LoadNames(BinaryReader reader)
     {
         int strLength = reader.ReadInt32();
         var byteArray = reader.ReadBytes(strLength);
         string nameStr = System.Text.Encoding.UTF8.GetString(byteArray);
-        UnityEngine.Debug.Log(nameStr);
         return new List<string>(nameStr.Split(','));
+    }
+
+
+    public void LoadBoneData(BinaryReader reader){
+        boneNames = LoadNames(reader);
+        int[] boneMapArray = LoadArray1D(reader);
+        boneArray = new List<HumanBodyBones>();
+        for (int i = 0; i < boneNames.Count; i++)
+        {
+            var bone = (HumanBodyBones)boneMapArray[i];
+            boneArray.Add(bone);
+            var name = boneNames[i];
+            boneMap[bone] = name;
+            boneIndexMap[bone] = i;
+        }
     }
 
     public void LoadResource(string fileName){
@@ -742,17 +830,7 @@ public class MMDatabase
 
         if (settings.version == MMDatabaseVersion.DANCE)
         {
-            boneNames = LoadNames(reader);
-            int[] boneMapArray = LoadArray1D(reader);
-            boneArray = new List<HumanBodyBones>();
-            for (int i = 0; i < boneNames.Count; i++)
-            {
-                var bone = (HumanBodyBones)boneMapArray[i];
-                boneArray.Add(bone);
-                var name = boneNames[i];
-                boneMap[bone] = name;
-                boneIndexMap[bone] = i;
-            }
+            LoadBoneData(reader);
         }
         else
         {
@@ -766,7 +844,19 @@ public class MMDatabase
         {
             f.boneIdx = boneNames.IndexOf(boneMap[f.bone]);
         }
+
+        if(settings.databaseType == MMDatabaseType.Music){
+            phaseData = LoadPhaseData(reader);
+        }
+        else if(settings.databaseType == MMDatabaseType.Annotation){
+            phaseData = LoadPhaseData(reader);
+            LoadAnnotationData(reader);
+        }
+        
+
     }
+
+
 }
 }
 }

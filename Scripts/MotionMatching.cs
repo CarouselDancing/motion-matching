@@ -40,6 +40,18 @@ public class MotionMatching : MonoBehaviour
     {
         database.ComputeFeatures();
         Debug.Log("caclulated features" + database.features.Length.ToString() +" "+ database.nFeatures.ToString());
+    }  
+    
+    public void SetAnnotationConstraint(int[] constraint){
+        database.SetAnnotationConstraint(constraint);
+    }
+
+    public void RemoveAnnotationConstraint(){
+        database.RemoveAnnotationConstraint();
+    }
+
+    public void GetAnnotationConstraint(ref List<int> constraint, int frameIdx){
+        database.GetAnnotationConstraint(ref constraint, frameIdx);
     }
 
     public int FindTransition(PoseState state, int frameIdx, List<Vector3> trajectoryPos, List<Quaternion> trajectoryRot)
@@ -68,7 +80,7 @@ public class MotionMatching : MonoBehaviour
         database.Search(query, ref result);
     }
 
-public float[] ComputeQuery(int frameIdx)
+    public float[] ComputeQuery(int frameIdx)
     {
         var query = new float[database.nFeatures];
         int offset = 0;
@@ -76,6 +88,9 @@ public float[] ComputeQuery(int frameIdx)
         {
             switch (f.type)
             {
+                case MMFeatureType.Phase:
+                    database.CopyFeatureUnnormalized(ref query, ref offset, 1, frameIdx);
+                    break;
                 case MMFeatureType.Position:
                     database.CopyFeatureUnnormalized(ref query, ref offset, 3, frameIdx);
                     break;
@@ -102,6 +117,9 @@ public float[] ComputeQuery(int frameIdx)
         {
             switch (f.type)
             {
+                case MMFeatureType.Phase:
+                    database.CopyFeatureUnnormalized(ref query, ref offset, 1, frameIdx);
+                    break;
                 case MMFeatureType.Position:
                     database.CopyFeatureUnnormalized(ref query, ref offset, 3, frameIdx);
                     break;

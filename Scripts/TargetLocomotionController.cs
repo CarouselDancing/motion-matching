@@ -27,6 +27,8 @@ public class TargetLocomotionController : LocomotionController
 
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         
+        annotationConstraint = new List<int>();
+        for (int i = 0; i < mm.database.nAnnotations; i++)annotationConstraint.Add(0);
         mm.ComputeFeatures();
 
         syncTimer = 1.0f / FPS;
@@ -100,8 +102,15 @@ public class TargetLocomotionController : LocomotionController
     override public void FindTransition()
     {
         int oldFrameIdx = frameIdx;
+        if (useAnnotationConstraint){
+            mm.SetAnnotationConstraint(annotationConstraint.ToArray());
+        }else{
+            mm.RemoveAnnotationConstraint();
+        }
+
         frameIdx = mm.FindTransition(poseState, frameIdx, trajectoryPos, trajectoryRot);
 
+        if (!useAnnotationConstraint) mm.GetAnnotationConstraint(ref annotationConstraint, frameIdx);
         /*
         if (mm.settings.databaseType == MMDatabaseType.Trajectory)
         mm.GetFeatureTrajectory(refPose, frameIdx, ref featureTrajectoryPos);*/
