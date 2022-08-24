@@ -16,12 +16,10 @@ public class CustomTwoBoneIK : CharacterPoser
     public float upperLimbLength;
     public float armLength;
     public float distanceToTarget;
-    public Vector3 localDirToHint;
     
     override public void SetTransforms()
     {
-        var dirToHint = (hint.position - root.position).normalized;
-        localDirToHint = (Quaternion.Inverse(root.parent.rotation) * dirToHint).normalized;
+     
         initialized = true;
     }
 
@@ -43,7 +41,6 @@ public class CustomTwoBoneIK : CharacterPoser
         }
         var dirToEnd = (end.position - root.position).normalized;
         dirToTarget = (target.position - root.position).normalized;
-        var dirToHint = (hint.position - root.position).normalized;
 
         var rootDelta = Quaternion.FromToRotation(dirToEnd, dirToTarget).normalized;
         var rotation =  Quaternion.Normalize(rootDelta*root.rotation);
