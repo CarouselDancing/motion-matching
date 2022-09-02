@@ -32,6 +32,7 @@ public class PoseState
     public Quaternion[] fkRotationBuffer;
     public bool[] fkCalculated;
     public float yOffset = 0;
+    public List<int> upperBodyIndices;
     public PoseState(int nBones, int[] boneParents, float yOffset =0)
     {
         this.yOffset = yOffset;
@@ -44,6 +45,7 @@ public class PoseState
         fkRotationBuffer = new Quaternion[nBones];
         fkCalculated = new bool[nBones];
         simulationRotation = Quaternion.identity;
+        upperBodyIndices = new List<int>();
     }
 
     public PoseState(PoseState other)
@@ -55,6 +57,7 @@ public class PoseState
         simulationAcceleration = other.simulationAcceleration;
         this.boneParents = other.boneParents;
         this.nBones = other.nBones;
+        this.upperBodyIndices = other.upperBodyIndices;
         bonePositions = new Vector3[nBones];
         boneRotations = new Quaternion[nBones];
         fkPositionBuffer = new Vector3[nBones];
@@ -105,7 +108,7 @@ public class PoseState
 
             for (; i < nBones; i++)
             {
-                if (useInterpolation)
+                if (useInterpolation && upperBodyIndices.Contains(i))
                 {
                     float angle = Quaternion.Angle(boneRotations[i], db.boneRotations[frameIdx, i]);
                     float rotSpeed = angle / maxAngle * maxDegreesPerSecond * Time.fixedDeltaTime;

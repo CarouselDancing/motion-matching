@@ -8,6 +8,7 @@ namespace Carousel.MotionMatching{
     
 public class TargetLocomotionController : LocomotionController
 {
+
     public Transform target;
     public MotionPrediction targetPrediction;
     public bool orientTowardsTarget;
@@ -24,6 +25,7 @@ public class TargetLocomotionController : LocomotionController
         poseState.maxDegreesPerSecond = settings.maxDegreesPerSecond;
         poseState.useInterpolation = settings.useInterpolation;
         poseState.tLC = this;
+        poseState.upperBodyIndices = Utils.CreateUpperBodyIndexList(mm.database.boneIndexMap);
 
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         

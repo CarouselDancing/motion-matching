@@ -84,6 +84,7 @@ public class MMSettings
                                                            new MMFeature() { weight = 1, bone = HumanBodyBones.LastBone, type= MMFeatureType.TrajectoryPositions},
                                                            new MMFeature() { weight = 1.25f, bone = HumanBodyBones.LastBone, type= MMFeatureType.TrajectoryDirections},
                                                              };
+
     
 }
 

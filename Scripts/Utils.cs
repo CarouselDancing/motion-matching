@@ -10,7 +10,20 @@ namespace MotionMatching{
     
 public class Utils
 {
-
+    static List<HumanBodyBones> UPPER_BODY_BONES = new List<HumanBodyBones>(){HumanBodyBones.Spine,    
+    HumanBodyBones.Chest, 
+    HumanBodyBones.UpperChest, 
+    HumanBodyBones.Neck,
+    HumanBodyBones.Head,
+    HumanBodyBones.LeftShoulder,
+    HumanBodyBones.LeftUpperArm,
+    HumanBodyBones.LeftLowerArm,
+    HumanBodyBones.LeftHand,
+    HumanBodyBones.RightShoulder,
+    HumanBodyBones.RightUpperArm,
+    HumanBodyBones.RightLowerArm,
+    HumanBodyBones.RightHand
+        };
     public static float fast_negexpf(float x)
     {
         return 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
@@ -23,6 +36,18 @@ public class Utils
         float LN2f = 0.69314718056f;
         return (4.0f * LN2f) / (halflife + eps);
 
+    }
+
+    public static List<int> CreateUpperBodyIndexList(Dictionary<HumanBodyBones, int> boneIndexMap){
+        var upperBodyIndices = new List<int>();
+        for(int i =0; i < UPPER_BODY_BONES.Count; i++){
+            var bone = UPPER_BODY_BONES[i];
+            if (boneIndexMap.ContainsKey(bone)){
+                var boneIdx = boneIndexMap[bone];
+                upperBodyIndices.Add(boneIdx);
+            }
+    }
+    return upperBodyIndices;
     }
 }
 
