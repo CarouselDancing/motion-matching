@@ -24,7 +24,8 @@ public class MMControllerSettigs
     public int speedFactor = 2;
     public bool useInterpolation = true;
     public float maxDegreesPerSecond = 90f;
-
+    public List<int> startConstraint = new List<int>() {3, 4};
+    public bool useStartConstraint;
 }
 
 }

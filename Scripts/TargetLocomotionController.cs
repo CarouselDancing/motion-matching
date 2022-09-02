@@ -27,8 +27,10 @@ public class TargetLocomotionController : LocomotionController
 
         refPose = new PoseState(mm.database.nBones, mm.database.boneParents);
         
-        annotationConstraint = new List<int>();
-        for (int i = 0; i < mm.database.nAnnotations; i++)annotationConstraint.Add(0);
+        if (annotationConstraint == null || annotationConstraint.Count != mm.database.nAnnotations){
+            annotationConstraint = new List<int>();
+            for (int i = 0; i < mm.database.nAnnotations; i++)annotationConstraint.Add(0);
+        }
         mm.ComputeFeatures();
 
         syncTimer = 1.0f / FPS;
