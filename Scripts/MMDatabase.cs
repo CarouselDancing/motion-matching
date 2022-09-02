@@ -31,6 +31,11 @@ public enum MMFeatureType
     Phase
 }
 
+public enum MMFileFormat
+{
+    Binary,
+    Numpy
+}
 
 public enum Bones
 {
@@ -84,7 +89,7 @@ public class MMSettings
                                                            new MMFeature() { weight = 1, bone = HumanBodyBones.LastBone, type= MMFeatureType.TrajectoryPositions},
                                                            new MMFeature() { weight = 1.25f, bone = HumanBodyBones.LastBone, type= MMFeatureType.TrajectoryDirections},
                                                              };
-
+    public MMFileFormat format;
     
 }
 
@@ -174,6 +179,7 @@ public class SearchResult
 public class MMDatabase 
 {
 
+    public float fps = 60f;
     public int nFrames;
     public int nBones;
     public int nMusicDims;
@@ -197,7 +203,7 @@ public class MMDatabase
     public float[] featuresMean;
     public float[] featuresScale;
     public int nFeatures;
-    MMSettings settings;
+    public MMSettings settings;
     public List<string> boneNames = new List<string>{ "Entity", "Hips", "LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToe",
                                                       "RightUpLeg", "RightLeg", "RightFoot",  "RightToe", "Spine", "Spine1",  "Spine2",  "Neck", "Head", "LeftShoulder", "LeftArm", "LeftForeArm", "LeftHand", "RightShoulder", "RightArm", "RightForeArm", "RightHand" };
     public Dictionary<HumanBodyBones, string> boneMap = new Dictionary<HumanBodyBones, string>() { { HumanBodyBones.LastBone, "Entity" },
@@ -669,192 +675,6 @@ public class MMDatabase
 
 
         }
-    }
-
-    bool[,] LoadContacts(BinaryReader reader)
-    {
-        int nFrames = reader.ReadInt32();
-        int ncontacts = reader.ReadInt32();
-        bool[,] contacts = new bool[nFrames, ncontacts];
-        for (int i = 0; i < nFrames; i++)
-        {
-            for (int j = 0; j < ncontacts; j++)
-            {
-                contacts[i, j] = reader.ReadBoolean();//8 bit
-            }
-        }
-        return contacts;
-    }
-
-    Vector3[,] LoadPositions(BinaryReader reader)
-    {
-        nFrames = reader.ReadInt32();
-        nBones = reader.ReadInt32();
-
-        UnityEngine.Debug.Log("Load" + nFrames.ToString() +" " + nBones.ToString());
-        Vector3[,] array = new Vector3[nFrames, nBones];
-        for (int i = 0; i < nFrames; i++)
-        {
-            for (int j = 0; j < nBones; j++)
-            {
-                array[i, j].x = -reader.ReadSingle();
-                array[i, j].y = reader.ReadSingle();
-                array[i, j].z = reader.ReadSingle();
-            }
-        }
-        return array;
-    }
-    Quaternion[,] LoadRotations(BinaryReader reader)
-    {
-        nFrames = reader.ReadInt32();
-        nBones = reader.ReadInt32();
-
-        UnityEngine.Debug.Log("Load" + nFrames.ToString() + " " + nBones.ToString());
-        Quaternion[,] boneRotations = new Quaternion[nFrames,nBones];
-        for (int i = 0; i < nFrames; i++)
-        {
-            for (int j = 0; j < nBones; j++)
-            {
-                boneRotations[i, j].w = -reader.ReadSingle();
-                boneRotations[i, j].x = -reader.ReadSingle();
-                boneRotations[i, j].y = reader.ReadSingle();
-                boneRotations[i, j].z = reader.ReadSingle();
-            }
-        }
-        return boneRotations;
-    }
-    float[] LoadPhaseData(BinaryReader reader)
-    {
-        nFrames = reader.ReadInt32();
-        int nPhaseDims = reader.ReadInt32();
-        UnityEngine.Debug.Log("Load" + nFrames.ToString());
-        float[] floatArray = new float[nFrames];
-        for (int i = 0; i < nFrames; i++){
-            floatArray[i] = reader.ReadSingle();
-        }
-        return floatArray;
-    }
-
-    void LoadAnnotationData(BinaryReader reader){
-        
-        annotationKeys = LoadNames(reader);
-        annotationValues = LoadNames(reader);
-        int nFrames = reader.ReadInt32();
-        nAnnotations = reader.ReadInt32();
-        annotationMatrix = new int[nAnnotations, nFrames];
-        for (int i = 0; i < nFrames; i++)
-        {
-            for (int j = 0; j < nAnnotations; j++)
-            {
-                annotationMatrix[j, i] = reader.ReadInt32();
-            }
-        }
-    }
-
-    int[] LoadArray1D(BinaryReader reader)
-    {
-        int nBones = reader.ReadInt32();
-        int[] array = new int[ nBones];
-        for (int i = 0; i <  nBones; i++)
-        {
-            array[i] = reader.ReadInt32();
-            
-        }
-        return array;
-    }
-    
-    List<string> LoadNames(BinaryReader reader)
-    {
-        int strLength = reader.ReadInt32();
-        var byteArray = reader.ReadBytes(strLength);
-        string nameStr = System.Text.Encoding.UTF8.GetString(byteArray);
-        return new List<string>(nameStr.Split(','));
-    }
-
-
-    public void LoadBoneData(BinaryReader reader){
-        boneNames = LoadNames(reader);
-        int[] boneMapArray = LoadArray1D(reader);
-        boneArray = new List<HumanBodyBones>();
-        for (int i = 0; i < boneNames.Count; i++)
-        {
-            var bone = (HumanBodyBones)boneMapArray[i];
-            boneArray.Add(bone);
-            var name = boneNames[i];
-            boneMap[bone] = name;
-            boneIndexMap[bone] = i;
-        }
-    }
-
-    public void LoadResource(string fileName){
-        TextAsset asset = Resources.Load(fileName) as TextAsset;
-        Stream stream = new MemoryStream(asset.bytes);
-        using (var reader = new BinaryReader(stream))
-        {
-            LoadBinary(reader);
-        }
-
-    }
-
-
-    public void Load(string fileName)
-    {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        UnityEngine.Debug.Log("Load" + fileName);
-        using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read ))
-        {
-            using (var reader = new BinaryReader(stream))
-            {
-                LoadBinary(reader);
-
-            }
-        }
-        stopwatch.Stop();
-        var deltaTime = stopwatch.ElapsedMilliseconds;
-
-        UnityEngine.Debug.Log("finished loading " + deltaTime.ToString());
-
-    }
-    public void LoadBinary(BinaryReader reader)
-    {
-        bonePositions = LoadPositions(reader);
-        boneVelocities = LoadPositions(reader);
-        boneRotations = LoadRotations(reader);
-        boneAngularVelocities = LoadPositions(reader);
-        boneParents = LoadArray1D(reader);
-        rangeStart = LoadArray1D(reader);
-        rangeStop = LoadArray1D(reader);
-        contactStates = LoadContacts(reader);
-
-        boneIndexMap = new Dictionary<HumanBodyBones, int>();
-
-        if (settings.version == MMDatabaseVersion.DANCE)
-        {
-            LoadBoneData(reader);
-        }
-        else
-        {
-            foreach (var bone in boneMap.Keys)
-            {
-                var boneName = boneMap[bone];
-                boneIndexMap[bone] = boneNames.IndexOf(boneName);
-            }
-        }
-        foreach (var f in settings.features)
-        {
-            f.boneIdx = boneNames.IndexOf(boneMap[f.bone]);
-        }
-
-        if(settings.databaseType == MMDatabaseType.Music){
-            phaseData = LoadPhaseData(reader);
-        }
-        else if(settings.databaseType == MMDatabaseType.Annotation){
-            phaseData = LoadPhaseData(reader);
-            LoadAnnotationData(reader);
-        }
-        
-
     }
 
 

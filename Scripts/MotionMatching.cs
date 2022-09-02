@@ -22,14 +22,18 @@ public class MotionMatching : MonoBehaviour
     }
     public PoseState Load()
     {
-        database = new MMDatabase(settings);
-
         // var fullPath = Path.Combine(Application.streamingAssetsPath, filename);
         //database.Load(fullPath);
         //state = new MotionState(database.nBones, database.boneParents);
         //state.SetState(database, frameIdx);
+        if (settings.format == MMFileFormat.Binary){
+            var loader = new MMDatabaseBinaryLoader(settings);
+            database = loader.LoadResource(filename);
+        }else{
+            var loader = new MMDatabaseNumbyLoader(settings);
+            database = loader.LoadResource(filename);
 
-        database.LoadResource(filename);
+        }
         initialized = true;
         initialState = new PoseState(database.nBones, database.boneParents);
         initialState.SetState(database, 0);
