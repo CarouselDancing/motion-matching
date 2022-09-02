@@ -167,12 +167,12 @@ class MMDatabaseBinaryLoader{
         db.annotationValues = LoadNames(reader);
         int nFrames = reader.ReadInt32();
         db.nAnnotations = reader.ReadInt32();
-        db.annotationMatrix = new int[db.nAnnotations, db.nFrames];
+        db.annotationMatrix = new int[db.nFrames, db.nAnnotations];
         for (int i = 0; i < db.nFrames; i++)
         {
             for (int j = 0; j < db.nAnnotations; j++)
             {
-                db.annotationMatrix[j, i] = reader.ReadInt32();
+                db.annotationMatrix[i, j] = reader.ReadInt32();
             }
         }
     }

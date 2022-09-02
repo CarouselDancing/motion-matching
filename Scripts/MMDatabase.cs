@@ -235,7 +235,7 @@ public class MMDatabase
 
     public void GetAnnotationConstraint(ref List<int> constraint, int frameIdx){
         for (int i = 0; i < nAnnotations; i++){
-            constraint[i] = annotationMatrix[i, frameIdx];
+            constraint[i] = annotationMatrix[frameIdx, i];
         }
     }
 
@@ -311,11 +311,11 @@ public class MMDatabase
         return bestIdx;
     }
 
-    public bool checkConstraint(int index){
+    public bool checkConstraint(int frameIdx){
         int distance = 0;
         for (int i = 0; i < nAnnotations; i++)
         {
-            distance += constraint[i] - annotationMatrix[i, index];
+            distance += constraint[i] - annotationMatrix[frameIdx, i];
         }
         return distance == 0;
     }
