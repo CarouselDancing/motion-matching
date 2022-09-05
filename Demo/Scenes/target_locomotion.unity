@@ -174,7 +174,8 @@ MonoBehaviour:
     nFeatures: 0
     boneNames: []
     boneArray: 
-  filename: loco_database.bin
+  filenames:
+  - loco_database.bin
   settings:
     ignoreRangeEnd: 0
     version: 0

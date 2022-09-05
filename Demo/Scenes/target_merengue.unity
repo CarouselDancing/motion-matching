@@ -164,7 +164,8 @@ MonoBehaviour:
     nFeatures: 0
     boneNames: []
     boneArray: 
-  filename: database_merengue_full.bin
+  filenames:
+  - database_merengue_full.bin
   settings:
     ignoreRangeEnd: 0
     version: 1

@@ -152,23 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35eac6fcb935da4797eeb76807fa3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  database:
-    nFrames: 0
-    nBones: 0
-    nMusicDims: 0
-    boneParents: 
-    rangeStart: 
-    rangeStop: 
-    featuresMean: []
-    featuresScale: []
-    nFeatures: 0
-    boneNames: []
-    boneArray: 
-  filename: database_merengue_raw.bin
+  _databases: []
+  filenames:
+  - database_merengue_raw_annotation.bin
   settings:
     ignoreRangeEnd: 0
     version: 1
-    databaseType: 0
+    databaseType: 3
     features:
     - bone: 5
       boneIdx: 0
@@ -198,8 +188,14 @@ MonoBehaviour:
       boneIdx: 0
       type: 3
       weight: 1.25
+    format: 0
   initialized: 0
+  dbIndex: 0
   initialState:
+    useInterpolation: 0
+    moveWithVelo: 0
+    tLC: {fileID: 0}
+    maxDegreesPerSecond: 0
     simulationPosition: {x: 0, y: 0, z: 0}
     simulationVelocity: {x: 0, y: 0, z: 0}
     simulationAcceleration: {x: 0, y: 0, z: 0}
@@ -214,7 +210,9 @@ MonoBehaviour:
     boneRotations: []
     fkPositionBuffer: []
     fkRotationBuffer: []
+    fkCalculated: 
     yOffset: 0
+    upperBodyIndices: 
 --- !u!4 &309177460
 Transform:
   m_ObjectHideFlags: 0
@@ -717,6 +715,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   root: {fileID: 0}
   poseState:
+    useInterpolation: 0
+    moveWithVelo: 0
+    tLC: {fileID: 0}
+    maxDegreesPerSecond: 0
     simulationPosition: {x: 0, y: 0, z: 0}
     simulationVelocity: {x: 0, y: 0, z: 0}
     simulationAcceleration: {x: 0, y: 0, z: 0}
@@ -731,7 +733,9 @@ MonoBehaviour:
     boneRotations: []
     fkPositionBuffer: []
     fkRotationBuffer: []
+    fkCalculated: 
     yOffset: 0
+    upperBodyIndices: 
   mm: {fileID: 309177459}
   interaction: {fileID: 0}
   settings:
@@ -744,6 +748,10 @@ MonoBehaviour:
     minSpeed: 0.1
     startFrameIdx: 0
     speedFactor: 2
+    useInterpolation: 1
+    maxDegreesPerSecond: 90
+    startConstraint: 0300000004000000
+    useStartConstraint: 0
   cameraController: {fileID: 0}
   stickDir: {x: 0, y: 0, z: 0}
   prediction: 0
@@ -755,7 +763,11 @@ MonoBehaviour:
   useMotionVelocity: 1
   useMotionAngularVelocity: 1
   velocityScale: 1
+  syncFPS: 0
+  annotationConstraint: 0000000000000000
+  useAnnotationConstraint: 0
   target: {fileID: 806401635}
+  targetPrediction: {fileID: 0}
   orientTowardsTarget: 0
 --- !u!1 &1762674954
 GameObject:

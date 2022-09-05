@@ -776,6 +776,14 @@ PrefabInstance:
       value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 8249006123182262033, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
+      propertyPath: filenames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8249006123182262033, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
+      propertyPath: filenames.Array.data[0]
+      value: database_merengue_full.bin
+      objectReference: {fileID: 0}
+    - target: {fileID: 8249006123182262033, guid: d8bdfd5c6bbb8744a85322831a46e990, type: 3}
       propertyPath: database.boneNames.Array.size
       value: 23
       objectReference: {fileID: 0}

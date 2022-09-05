@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+
 namespace Carousel
 {
 
@@ -10,11 +11,20 @@ namespace MotionMatching{
 
 public class MotionMatching : MonoBehaviour
 {
-    [SerializeField] public MMDatabase database;
-    public string filename;
+    [SerializeField] public List<MMDatabase> _databases;
+    public List<string> filenames;
     public MMSettings settings;
     public bool initialized = false;
+    public int dbIndex = 0;
     public PoseState initialState;
+    public MMDatabase database
+    {
+        get
+        {
+            return this._databases[dbIndex];
+        }
+    }
+
 
     public bool AssertIndex(int idx)
     {
@@ -22,28 +32,42 @@ public class MotionMatching : MonoBehaviour
     }
     public PoseState Load()
     {
-        // var fullPath = Path.Combine(Application.streamingAssetsPath, filename);
-        //database.Load(fullPath);
-        //state = new MotionState(database.nBones, database.boneParents);
-        //state.SetState(database, frameIdx);
-        if (settings.format == MMFileFormat.Binary){
-            var loader = new MMDatabaseBinaryLoader(settings);
-            database = loader.LoadResource(filename);
-        }else{
-            var loader = new MMDatabaseNumbyLoader(settings);
-            database = loader.LoadResource(filename);
-
+        _databases = new List<MMDatabase>();
+        foreach(string filename in filenames){
+            var db = LoadDatabase(filename);
+            _databases.Add(db);
         }
+        
         initialized = true;
         initialState = new PoseState(database.nBones, database.boneParents);
         initialState.SetState(database, 0);
         return initialState;
     }
 
+    MMDatabase LoadDatabase(string filename){   
+        // var fullPath = Path.Combine(Application.streamingAssetsPath, filename);
+        //database.Load(fullPath);
+        //state = new MotionState(database.nBones, database.boneParents);
+        //state.SetState(database, frameIdx);
+        MMDatabase db;
+        if (settings.format == MMFileFormat.Binary){
+            var loader = new MMDatabaseBinaryLoader(settings);
+            db = loader.LoadResource(filename);
+        }else{
+            var loader = new MMDatabaseNumbyLoader(settings);
+            db = loader.LoadResource(filename);
+        }
+        return db;
+    }
+
+
     public void ComputeFeatures()
     {
-        database.ComputeFeatures();
-        Debug.Log("caclulated features" + database.features.Length.ToString() +" "+ database.nFeatures.ToString());
+        foreach(var db in _databases){
+            db.ComputeFeatures();
+            Debug.Log("caclulated features" + db.features.Length.ToString() +" "+ db.nFeatures.ToString());
+        }
+        
     }  
     
     public void SetAnnotationConstraint(int[] constraint){

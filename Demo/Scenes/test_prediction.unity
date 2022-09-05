@@ -153,7 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35eac6fcb935da4797eeb76807fa3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filename: D:\Research\Carousel\workspace\motion_matching_database\mm_preprocessing\database_dance.bin
+  filenames:
+  -  D:\Research\Carousel\workspace\motion_matching_database\mm_preprocessing\database_dance.bin
   settings:
     weight_foot_position: 0.75
     weight_foot_velocity: 1
