@@ -26,6 +26,7 @@ public class MMControllerSettigs
     public float maxDegreesPerSecond = 90f;
     public List<int> startConstraint = new List<int>() {3, 4};
     public bool useStartConstraint;
+    public bool adaptControlWeight;
 }
 
 }

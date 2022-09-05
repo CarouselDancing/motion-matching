@@ -13,7 +13,7 @@ public class TargetLocomotionController : LocomotionController
     public MotionPrediction targetPrediction;
     public bool orientTowardsTarget;
     public bool adaptControlWeight = false;
-    public float maxDistance = 10;
+    public float maxDistance = 1f;
     public float minDistance = 0.1f;
     public float distanceToTarget;
     public float deltaAngle;
