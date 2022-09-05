@@ -12,6 +12,13 @@ public class TargetLocomotionController : LocomotionController
     public Transform target;
     public MotionPrediction targetPrediction;
     public bool orientTowardsTarget;
+    public bool adaptControlWeight = false;
+    public float maxDistance = 10;
+    public float minDistance = 0.1f;
+    public float distanceToTarget;
+    public float deltaAngle;
+    public float maxAngle = 45;
+
 
     void Start()
     {
@@ -111,7 +118,27 @@ public class TargetLocomotionController : LocomotionController
         }else{
             mm.RemoveAnnotationConstraint();
         }
-
+        if(target == null){
+            spatialControlWeight = 0;
+        }else if(adaptControlWeight && maxDistance > minDistance && minDistance > 0){
+            Vector3 delta = target.position- transform.position;
+            delta.y  = 0;
+            float distanceRange = maxDistance - minDistance;
+            distanceToTarget = Mathf.Min(delta.magnitude, maxDistance);
+            distanceToTarget = Mathf.Max(distanceToTarget-minDistance, 0);
+            spatialControlWeight = distanceToTarget/ distanceRange;
+            var deltaQ = Quaternion.Inverse(target.rotation) * transform.rotation;
+            deltaAngle = Mathf.Abs(deltaQ.eulerAngles.y);
+            if (deltaAngle > 180){
+                deltaAngle = 360-deltaAngle;
+            }
+            var angleDistance = Mathf.Min(deltaAngle, maxAngle);
+            angleDistance = Mathf.Max(angleDistance, 0);
+            spatialControlWeight += angleDistance/maxAngle;
+            spatialControlWeight /= 2;
+            
+        }
+        mm.SetDynamicWeights(spatialControlWeight);
         frameIdx = mm.FindTransition(poseState, frameIdx, trajectoryPos, trajectoryRot);
 
         if (!useAnnotationConstraint) mm.GetAnnotationConstraint(ref annotationConstraint, frameIdx);

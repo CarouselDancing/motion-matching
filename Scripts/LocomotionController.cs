@@ -48,6 +48,9 @@ public class LocomotionController : MMPoseProvider
     public List<int> annotationConstraint = new List<int>(){0, 0};
     public bool useAnnotationConstraint;
 
+    [Range(0.0F, 1.0F)]
+    public float spatialControlWeight = 1.0f;
+
     void Start()
     {
         var anim = GetComponent<Animator>();

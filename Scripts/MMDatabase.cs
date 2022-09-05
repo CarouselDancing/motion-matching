@@ -9,6 +9,8 @@ namespace Carousel
 {
 
 namespace MotionMatching{
+
+//TODO REMOVE AFTER SWITCH TO NEW FORMAT
 public enum MMDatabaseVersion
 {
     HOLDEN,
@@ -202,6 +204,7 @@ public class MMDatabase
     public float[,] features;
     public float[] featuresMean;
     public float[] featuresScale;
+    public float[] dynamicWeights;
     public int nFeatures;
     public MMSettings settings;
     public List<string> boneNames = new List<string>{ "Entity", "Hips", "LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToe",
@@ -350,9 +353,33 @@ public class MMDatabase
         for (int i = 0; i < nFeatures; i++)
         {
             temp = queryNormalized[i] - features[index, i];
-            cost += temp*temp;
+            cost += (temp*temp) * dynamicWeights[i];
         }
         return cost;
+    }
+
+    public void SetDynamicWeights(float spatialControlWeight){
+        int offset = 0;
+        foreach(var f in settings.features)
+        {
+            if (f.type == MMFeatureType.Phase){
+                dynamicWeights[offset] = 1;
+                offset+=1;
+            }else if (f.type == MMFeatureType.TrajectoryPositions || f.type == MMFeatureType.TrajectoryDirections){
+                dynamicWeights[offset] = spatialControlWeight;
+                dynamicWeights[offset+1] = spatialControlWeight;
+                dynamicWeights[offset+2] = spatialControlWeight;
+                dynamicWeights[offset+3] = spatialControlWeight;
+                dynamicWeights[offset+4] = spatialControlWeight;
+                dynamicWeights[offset+5] = spatialControlWeight;
+                offset +=6;
+            }else{
+                dynamicWeights[offset] = 1;
+                dynamicWeights[offset+1] = 1;
+                dynamicWeights[offset+2] = 1;
+                offset+=3;
+            }
+        }
     }
 
     public void ComputeFeatures()
@@ -360,7 +387,8 @@ public class MMDatabase
 
         nFeatures = 0;
         foreach(var f in settings.features)
-        {if (f.type == MMFeatureType.Phase)
+        {
+            if (f.type == MMFeatureType.Phase)
             {
                 nFeatures += 1;
             }
@@ -402,6 +430,8 @@ public class MMDatabase
             }
             
         }
+        dynamicWeights = new float[nFeatures];
+        SetDynamicWeights(1.0f);
 
     }
 

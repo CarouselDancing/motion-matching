@@ -124,6 +124,11 @@ public class MotionMatching : MonoBehaviour
     {
         return database.trajectoryIndexClamp(frame, offset);
     }
+    
+    public void SetDynamicWeights(float spatialControlWeight)
+    {
+        database.SetDynamicWeights(spatialControlWeight);
+    }
 
 
     public void DrawPose(int fIdx, float visScale)
