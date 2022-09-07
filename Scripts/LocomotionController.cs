@@ -153,7 +153,7 @@ public class LocomotionController : MMPoseProvider
 
         if(frameIdx >= mm.database.nFrames) {
             forceSearchTimer = 0;
-            frameIdx = frameIdx-1;
+            frameIdx = mm.database.nFrames-1;
         }
     }
 

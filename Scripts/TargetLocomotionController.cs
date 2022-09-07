@@ -100,11 +100,14 @@ public class TargetLocomotionController : LocomotionController
     
         refPose.SetState(mm.database, frameIdx, false);
         frameIdx++;//prevents getting stuck
-     
+
+        mm.TriggerDBSwitch();//this might make the current frame idx invalid
+
         verifyFrame();
 
         transform.position = poseState.simulationPosition;
         transform.rotation = poseState.simulationRotation;
+
 
     }
 
@@ -137,6 +140,8 @@ public class TargetLocomotionController : LocomotionController
             spatialControlWeight += angleDistance/maxAngle;
             spatialControlWeight /= 2;
             
+        }else{
+            spatialControlWeight =1;
         }
         mm.SetDynamicWeights(spatialControlWeight);
         frameIdx = mm.FindTransition(poseState, frameIdx, trajectoryPos, trajectoryRot);
@@ -240,6 +245,11 @@ public class TargetLocomotionController : LocomotionController
             return poseState.simulationRotation; // return current rotation
         }
         
+    }
+
+    public void SwitchToNextDatabase(){
+        
+        mm.ScheduleSwitchToNextDatabase();
     }
 
 

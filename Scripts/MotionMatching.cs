@@ -16,6 +16,7 @@ public class MotionMatching : MonoBehaviour
     public MMSettings settings;
     public bool initialized = false;
     public int dbIndex = 0;
+    public int nextDBIndex = 0;
     public PoseState initialState;
     public MMDatabase database
     {
@@ -140,6 +141,16 @@ public class MotionMatching : MonoBehaviour
             database.ForwardKinematics(out pos, out rot, fIdx, boneIdx);
             Gizmos.DrawSphere(pos, visScale);
         }
+    }
+
+    public void ScheduleSwitchToNextDatabase(){
+        if( _databases.Count > 0){
+            nextDBIndex = dbIndex +1;
+            nextDBIndex %= _databases.Count;
+        }
+    }
+    public void TriggerDBSwitch(){
+        dbIndex = nextDBIndex;
     }
 
 
