@@ -50,13 +50,13 @@ public class CustomLookAt : CharacterPoser
         var direction = (targetTransform.position) - boneTransform.position+positionOffset;
         Quaternion desiredRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         if (applyLimits){
-            var localDesiredRotation  = Quaternion.Inverse(boneTransform.parent.rotation)*Quaternion.Inverse(defaultRotation)*  desiredRotation;
+            var localDesiredRotation  = Quaternion.Inverse(boneTransform.parent.rotation)* desiredRotation;
             localDesiredRotationE = localDesiredRotation.eulerAngles;
             localDesiredRotationE.x = ClampAngle(localDesiredRotationE.x, maxAngles.x);
             localDesiredRotationE.y = ClampAngle(localDesiredRotationE.y, maxAngles.y);
             localDesiredRotationE.z = ClampAngle(localDesiredRotationE.z, maxAngles.z);
             localDesiredRotation = Quaternion.Euler(localDesiredRotationE.x, localDesiredRotationE.y, localDesiredRotationE.z);
-            desiredRotation = boneTransform.parent.rotation * defaultRotation * localDesiredRotation;
+            desiredRotation = boneTransform.parent.rotation *  localDesiredRotation;
         }
         var offsetQ = Quaternion.Euler(rotationOffset.x, rotationOffset.y, rotationOffset.z);
         boneTransform.rotation = desiredRotation*offsetQ;
