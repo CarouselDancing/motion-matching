@@ -106,6 +106,19 @@ class MMDatabaseNumbyLoader{
 
             }
         }
+        try{
+            var intContactStates = (int[,]) data["contact_states.npy"];
+            db.contactStates = new bool[db.nFrames,2];
+            for (int i = 0; i < db.nFrames; i++)
+            {
+                
+                    db.contactStates[i, 0] = intContactStates[i,0]==0;
+                    db.contactStates[i, 1] = intContactStates[i,1]==1;
+            }
+        }catch{
+
+        }
+
         if(data.ContainsKey("phase_data.npy")){
             db.phaseData = (float[]) data["phase_data.npy"];
             
