@@ -206,6 +206,11 @@ public class MMDatabase
     public float[] featuresScale;
     public float[] dynamicWeights;
     public int nFeatures;
+    public bool calculatedFeatures = false;
+
+    public int[,] neighborMatrix;
+    public bool hasNeighbors = false;
+
     public MMSettings settings;
     public List<string> boneNames = new List<string>{ "Entity", "Hips", "LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToe",
                                                       "RightUpLeg", "RightLeg", "RightFoot",  "RightToe", "Spine", "Spine1",  "Spine2",  "Neck", "Head", "LeftShoulder", "LeftArm", "LeftForeArm", "LeftHand", "RightShoulder", "RightArm", "RightForeArm", "RightHand" };
