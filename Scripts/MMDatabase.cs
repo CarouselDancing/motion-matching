@@ -382,25 +382,29 @@ public class MMDatabase
         }
     }
 
-    public void ComputeFeatures()
-    {
-
-        nFeatures = 0;
+    public int GetNFeatures(){
+        int nDims = 0;
         foreach(var f in settings.features)
         {
             if (f.type == MMFeatureType.Phase)
             {
-                nFeatures += 1;
+                nDims += 1;
             }
             else if (f.type == MMFeatureType.TrajectoryPositions || f.type == MMFeatureType.TrajectoryDirections)
             {
-                nFeatures += 6;
+                nDims += 6;
             }
             else { 
-                nFeatures += 3;
+                nDims += 3;
             }
         }
+        return nDims;
 
+    }
+
+    public void ComputeFeatures()
+    {
+        nFeatures = GetNFeatures();
         features = new float[nFrames, nFeatures];
         featuresMean = new float[nFeatures];
         featuresScale = new float[nFeatures];
@@ -430,11 +434,45 @@ public class MMDatabase
             }
             
         }
+        normalizeFeatures();
         dynamicWeights = new float[nFeatures];
         SetDynamicWeights(1.0f);
+        
+        calculatedFeatures = true;
 
     }
 
+
+    public void normalizeFeatures(){
+        
+        int offset = 0;
+        foreach (var f in settings.features)
+        {
+            switch (f.type) {
+                case MMFeatureType.Phase:
+                    normalizeFeature(offset, 1, f.weight);
+                    offset += 1;
+                    break;
+                case MMFeatureType.Position:
+                    normalizeFeature(offset, 3,  f.weight);
+                    offset += 3;
+                    break;
+                case MMFeatureType.Velocity:
+                    normalizeFeature(offset, 3,  f.weight);
+                    offset += 3;
+                    break;
+                case MMFeatureType.TrajectoryPositions:
+                    normalizeFeature(offset, 6,  f.weight);
+                    offset += 6;
+                    break;
+                case MMFeatureType.TrajectoryDirections:
+                    normalizeFeature(offset, 6,  f.weight);
+                    offset += 6;
+                    break;
+            }
+            
+        }
+    }
 
 
     // hard coded for left foot right foot and hips
@@ -491,10 +529,11 @@ public class MMDatabase
             features[i, offset + 5] = delta2.z;
         }
 
-        normalizeFeature(offset, 6, weight);
+        //normalizeFeature(offset, 6, weight);
         offset += 6;
     }
-
+    
+    //only works for sim bone
     void ComputeTrajectoryDirectionFeature(ref int offset, int boneIdx, float weight)
     {
         for (int i = 0; i < nFrames; i++)
@@ -514,7 +553,7 @@ public class MMDatabase
             features[i, offset + 5] = delta2.z;
         }
 
-        normalizeFeature(offset, 6, weight);
+        //normalizeFeature(offset, 6, weight);
         offset += 6;
     }
 
@@ -526,7 +565,7 @@ public class MMDatabase
             features[i, offset] = phaseData[i];
         }
 
-        normalizeFeature(offset, 1, weight);
+        //normalizeFeature(offset, 1, weight);
         offset += 1;
     }
 
@@ -545,7 +584,7 @@ public class MMDatabase
             features[i, offset + 2] = relPos.z;
         }
 
-        normalizeFeature(offset, 3, weight);
+        //normalizeFeature(offset, 3, weight);
         offset += 3;
     }
 
@@ -562,7 +601,7 @@ public class MMDatabase
             features[i, offset + 2] = vel.z;
         }
 
-        normalizeFeature(offset, 3, weight);
+        //normalizeFeature(offset, 3, weight);
         offset += 3;
     }
 

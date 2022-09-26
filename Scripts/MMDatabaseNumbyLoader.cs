@@ -11,9 +11,11 @@ namespace Carousel.MotionMatching{
 
 class MMDatabaseNumbyLoader{
     public MMSettings settings;
+    bool changeCoordinateSystem = true;
 
-    public MMDatabaseNumbyLoader(MMSettings settings){
+    public MMDatabaseNumbyLoader(MMSettings settings, bool changeCoordinateSystem=true){
         this.settings = settings;
+        this.changeCoordinateSystem = changeCoordinateSystem;
     }
 
     
@@ -78,27 +80,28 @@ class MMDatabaseNumbyLoader{
         db.boneVelocities = new Vector3[db.nFrames,db.nBones];
         db.boneRotations = new Quaternion[db.nFrames,db.nBones];
         db.boneAngularVelocities = new Vector3[db.nFrames,db.nBones];
+        int conversionSign = changeCoordinateSystem? -1: 1;
         for (int i = 0; i < db.nFrames; i++)
         {
             for (int j = 0; j < db.nBones; j++)
             {
-                db.bonePositions[i, j].x = -positions[i,j,0];
+                db.bonePositions[i, j].x = conversionSign*positions[i,j,0];
                 db.bonePositions[i, j].y = positions[i,j,1];
                 db.bonePositions[i, j].z = positions[i,j,2];
 
 
-                db.boneRotations[i, j].w = -rotations[i,j,0];
-                db.boneRotations[i, j].x = -rotations[i,j,1];
+                db.boneRotations[i, j].w = conversionSign*rotations[i,j,0];
+                db.boneRotations[i, j].x = conversionSign*rotations[i,j,1];
                 db.boneRotations[i, j].y = rotations[i,j,2];
                 db.boneRotations[i, j].z = rotations[i,j,3];
 
 
-                db.boneVelocities[i, j].x = -velocities[i,j,0];
+                db.boneVelocities[i, j].x = conversionSign*velocities[i,j,0];
                 db.boneVelocities[i, j].y = velocities[i,j,1];
                 db.boneVelocities[i, j].z = velocities[i,j,2];
 
 
-                db.boneAngularVelocities[i, j].x = -angularVelocities[i,j,0];
+                db.boneAngularVelocities[i, j].x = conversionSign*angularVelocities[i,j,0];
                 db.boneAngularVelocities[i, j].y = angularVelocities[i,j,1];
                 db.boneAngularVelocities[i, j].z = angularVelocities[i,j,2];
 
@@ -151,6 +154,31 @@ class MMDatabaseNumbyLoader{
             db.annotationMatrix =(int[,])  data["annotation_matrix.npy"];
             UnityEngine.Debug.Log("error"+db.annotationMatrix.GetLength(0).ToString() +"_"+ db.annotationMatrix.GetLength(1).ToString() );
            
+        }
+        if(data.ContainsKey("features.npy")){
+            db.features = (float[,]) data["features.npy"];
+            db.featuresMean = (float[]) data["features_mean.npy"];
+            db.featuresScale = (float[]) data["features_scale.npy"];
+            db.nFeatures = db.featuresMean.Length;
+            UnityEngine.Debug.Log("nFeatures"+db.features.GetLength(0).ToString() +"_"+ db.features.GetLength(1).ToString() );
+            var feature_bones = (int[]) data["feature_bones.npy"];
+            var feature_types = (int[]) data["feature_types.npy"];
+            var feature_weights = (float[]) data["feature_weights.npy"];
+            db.settings.features = new List<MMFeature>();
+            int nFeatureDescs = feature_bones.Length;
+            for(int fDescIdx = 0; fDescIdx < nFeatureDescs; fDescIdx++ ){
+                var f = new MMFeature();
+                f.bone = (HumanBodyBones)feature_bones[fDescIdx];
+                f.type = (MMFeatureType)feature_types[fDescIdx];
+                f.weight = feature_weights[fDescIdx];
+                db.settings.features.Add(f);
+            }
+            
+            db.dynamicWeights = new float[db.nFeatures];
+            db.SetDynamicWeights(1.0f);
+            db.calculatedFeatures = true;
+            
+        }
         }
 
         UnityEngine.Debug.Log("finished loading");

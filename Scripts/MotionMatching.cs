@@ -26,6 +26,8 @@ public class MotionMatching : MonoBehaviour
         }
     }
 
+    public bool convertCoordinateSystem = true;
+    public bool useLoadedFeatures = true;
 
     public bool AssertIndex(int idx)
     {
@@ -55,7 +57,7 @@ public class MotionMatching : MonoBehaviour
             var loader = new MMDatabaseBinaryLoader(settings);
             db = loader.LoadResource(filename);
         }else{
-            var loader = new MMDatabaseNumbyLoader(settings);
+            var loader = new MMDatabaseNumbyLoader(settings, convertCoordinateSystem);
             db = loader.LoadResource(filename);
         }
         return db;
@@ -65,8 +67,12 @@ public class MotionMatching : MonoBehaviour
     public void ComputeFeatures()
     {
         foreach(var db in _databases){
-            db.ComputeFeatures();
-            Debug.Log("caclulated features" + db.features.Length.ToString() +" "+ db.nFeatures.ToString());
+            if(!db.calculatedFeatures || !useLoadedFeatures){
+                db.ComputeFeatures();
+            }else{
+                db.normalizeFeatures();
+            }
+            Debug.Log("calculated features " + db.features.Length.ToString() +" "+ db.nFeatures.ToString());
         }
         
     }  
