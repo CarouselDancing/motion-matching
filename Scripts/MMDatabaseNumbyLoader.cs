@@ -179,6 +179,12 @@ class MMDatabaseNumbyLoader{
             db.calculatedFeatures = true;
             
         }
+        
+        if(data.ContainsKey("neighbor_matrix.npy")){
+            db.neighborMatrix = (int[,]) data["neighbor_matrix.npy"];
+            db.hasNeighbors = true;
+            UnityEngine.Debug.Log("loaded neighbors"+db.neighborMatrix.GetLength(0).ToString() +"_"+ db.neighborMatrix.GetLength(1).ToString() );
+
         }
 
         UnityEngine.Debug.Log("finished loading");

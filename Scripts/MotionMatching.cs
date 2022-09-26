@@ -90,9 +90,17 @@ public class MotionMatching : MonoBehaviour
     }
 
     public int FindTransition(PoseState state, int frameIdx, List<Vector3> trajectoryPos, List<Quaternion> trajectoryRot)
-    {
-        float[] query = database.ComputeQuery(state, frameIdx, trajectoryPos, trajectoryRot);
-        return database.Search(query, frameIdx);
+    {  
+        var db = database;
+        frameIdx = db.trajectoryIndexClamp(frameIdx, 0);
+        int nextIdx = db.trajectoryIndexClamp(frameIdx, 1);
+        float[] query = db.ComputeQuery(state, frameIdx, trajectoryPos, trajectoryRot);
+        
+        if (db.hasNeighbors){
+            return db.SelectBestNeighbor(query, frameIdx, nextIdx);
+        }else{
+            return db.Search(query, nextIdx);
+        }
     }
 
     public int FindTransition(PoseState state, int frameIdx)

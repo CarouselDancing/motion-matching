@@ -294,14 +294,7 @@ public class MMDatabase
             int rangeEnd = rangeStop[rIdx] - settings.ignoreRangeEnd;
             while (frameIdx < rangeEnd)
             {
-                float cost = Mathf.Infinity;
-                if (useConstraint){
-                    if (checkConstraint(frameIdx)){
-                        cost = GetDistance(queryNormalized, frameIdx);
-                    }
-                }else{
-                    cost = GetDistance(queryNormalized, frameIdx);
-                }
+                float cost = GetConstrainedDistance(queryNormalized, frameIdx);
                 if (cost < bestCost)
                 {
                     bestIdx = frameIdx;
@@ -313,6 +306,38 @@ public class MMDatabase
         //Debug.Log("best cost"+ bestCost.ToString() + " < " +  initialCost.ToString());
         return bestIdx;
     }
+
+    public int SelectBestNeighbor(float[] query, int srcIdx, int bestIdx = -1)
+    {
+        float[] queryNormalized = normalizeFeature(query);
+
+        float bestCost = Mathf.Infinity;
+        if (bestIdx > -1)bestCost = GetDistance(queryNormalized, bestIdx);
+    
+        int k = neighborMatrix.GetLength(1);
+        for (int ni = 0; ni < k; ni++)
+        {
+            int frameIdx = neighborMatrix[srcIdx, ni];
+            float cost = GetConstrainedDistance(queryNormalized, frameIdx);
+            if (cost < bestCost)
+            {
+                bestIdx = frameIdx;
+                bestCost = cost;
+            }
+        }
+        return bestIdx;
+    }
+
+
+
+    float GetConstrainedDistance(float[] queryNormalized, int frameIdx){
+        float cost = Mathf.Infinity;
+        if (!useConstraint || checkConstraint(frameIdx)){
+            cost = GetDistance(queryNormalized, frameIdx);
+        }
+        return cost;
+    }
+
 
     public bool checkConstraint(int frameIdx){
         int distance = 0;
