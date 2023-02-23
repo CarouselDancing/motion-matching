@@ -71,6 +71,12 @@ class MMDatabaseBinaryLoader{
         }
         else
         {
+            db.boneMap = new Dictionary<HumanBodyBones, string>() { { HumanBodyBones.LastBone, "Entity" },
+                                                                                                    { HumanBodyBones.LeftFoot, "LeftFoot" },
+                                                                                                     { HumanBodyBones.RightFoot, "RightFoot" },
+                                                                                                    { HumanBodyBones.LeftHand, "LeftHand" },
+                                                                                                     { HumanBodyBones.RightHand, "RightHand" },
+                                                                                                     { HumanBodyBones.Hips, "Hips" },};
             foreach (var bone in db.boneMap.Keys)
             {
                 var boneName = db.boneMap[bone];
@@ -79,7 +85,9 @@ class MMDatabaseBinaryLoader{
         }
         foreach (var f in db.settings.features)
         {
-            f.boneIdx = db.boneNames.IndexOf(db.boneMap[f.bone]);
+            //if(db.boneMap.ContainsKey(f.bone)){
+                f.boneIdx = db.boneNames.IndexOf(db.boneMap[f.bone]);
+          //  }
         }
 
         if(settings.databaseType == MMDatabaseType.Music){
