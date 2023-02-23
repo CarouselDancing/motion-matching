@@ -64,9 +64,9 @@ class MMDatabaseBinaryLoader{
         db.contactStates = LoadArray2D(reader);
 
         db.boneIndexMap = new Dictionary<HumanBodyBones, int>();
-        db.boneMap = new Dictionary<HumanBodyBones, string>();
         if (settings.version == MMDatabaseVersion.DANCE)
         {
+            db.boneMap = new Dictionary<HumanBodyBones, string>();
             LoadBoneData(reader, ref db);
         }
         else
