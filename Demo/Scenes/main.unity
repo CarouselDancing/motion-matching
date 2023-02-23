@@ -162,18 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35eac6fcb935da4797eeb76807fa3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  database:
-    nFrames: 0
-    nBones: 0
-    nMusicDims: 0
-    boneParents: 
-    rangeStart: 
-    rangeStop: 
-    featuresMean: []
-    featuresScale: []
-    nFeatures: 0
-    boneNames: []
-    boneArray: 
+  _databases: []
   filenames:
   - loco_database.bin
   settings:
@@ -209,20 +198,34 @@ MonoBehaviour:
       boneIdx: 0
       type: 3
       weight: 1.25
+    format: 0
   initialized: 0
+  dbIndex: 0
+  nextDBIndex: 0
   initialState:
+    useInterpolation: 0
+    moveWithVelo: 0
+    tLC: {fileID: 0}
+    maxDegreesPerSecond: 0
     simulationPosition: {x: 0, y: 0, z: 0}
     simulationVelocity: {x: 0, y: 0, z: 0}
     simulationAcceleration: {x: 0, y: 0, z: 0}
     simulationRotation: {x: 0, y: 0, z: 0, w: 0}
     simulationAV: {x: 0, y: 0, z: 0}
+    motionVelocity: {x: 0, y: 0, z: 0}
+    motionAV: {x: 0, y: 0, z: 0}
+    motionRotation: {x: 0, y: 0, z: 0, w: 0}
     nBones: 0
     boneParents: 
     bonePositions: []
     boneRotations: []
     fkPositionBuffer: []
     fkRotationBuffer: []
+    fkCalculated: 
     yOffset: 0
+    upperBodyIndices: 
+  convertCoordinateSystem: 1
+  useLoadedFeatures: 0
 --- !u!4 &309177460
 Transform:
   m_ObjectHideFlags: 0
@@ -233,6 +236,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.75, y: 0.11337304, z: 2.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1744263232}
   m_RootOrder: 1
@@ -356,6 +360,7 @@ Transform:
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -459,6 +464,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1762674955}
   m_RootOrder: 0
@@ -561,6 +567,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07b61dafe79c91b4e919019d2ae26aa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
+  active: 1
+  inPipeline: 0
   src: {fileID: 1744263231}
   retargetingMap:
   - src: 0
@@ -794,20 +803,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0662053cfc27d54392972aa884d9df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  root: {fileID: 0}
   poseState:
+    useInterpolation: 0
+    moveWithVelo: 0
+    tLC: {fileID: 0}
+    maxDegreesPerSecond: 0
     simulationPosition: {x: 0, y: 0, z: 0}
     simulationVelocity: {x: 0, y: 0, z: 0}
     simulationAcceleration: {x: 0, y: 0, z: 0}
     simulationRotation: {x: 0, y: 0, z: 0, w: 0}
     simulationAV: {x: 0, y: 0, z: 0}
+    motionVelocity: {x: 0, y: 0, z: 0}
+    motionAV: {x: 0, y: 0, z: 0}
+    motionRotation: {x: 0, y: 0, z: 0, w: 0}
     nBones: 0
     boneParents: 
     bonePositions: []
     boneRotations: []
     fkPositionBuffer: []
     fkRotationBuffer: []
+    fkCalculated: 
     yOffset: 0
+    upperBodyIndices: 
   mm: {fileID: 309177459}
+  interaction: {fileID: 0}
   settings:
     visScale: 0.05
     forceSearchTime: 0.1
@@ -815,14 +835,29 @@ MonoBehaviour:
     simulationRotationHalflife: 0.27
     predictionDistance: 40
     maxSpeed: 10
+    minSpeed: 0.1
     startFrameIdx: 0
+    speedFactor: 2
+    useInterpolation: 1
+    maxDegreesPerSecond: 90
+    startConstraint: 0300000004000000
+    useStartConstraint: 0
+    adaptControlWeight: 0
   cameraController: {fileID: 1762674956}
   stickDir: {x: 0, y: 0, z: 0}
   prediction: 0
   frameIdx: 0
-  FPS: 120
+  FPS: 60
   active: 1
   desiredRotation: {x: 0, y: 0, z: 0, w: 0}
+  invertDirection: 0
+  useMotionVelocity: 0
+  useMotionAngularVelocity: 0
+  velocityScale: 1
+  syncFPS: 0
+  annotationConstraint: 0000000000000000
+  useAnnotationConstraint: 0
+  spatialControlWeight: 1
 --- !u!4 &1744263232
 Transform:
   m_ObjectHideFlags: 0
@@ -833,6 +868,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 5.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1762674955}
   - {fileID: 309177460}
@@ -866,6 +902,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 963194228}
   m_Father: {fileID: 1744263232}
@@ -950,6 +987,7 @@ Terrain:
   m_DrawHeightmap: 1
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
+  m_StaticShadowCaster: 0
   m_ReflectionProbeUsage: 1
   m_MaterialTemplate: {fileID: 10652, guid: 0000000000000000f000000000000000, type: 0}
   m_BakeLightProbesForTrees: 1
@@ -970,6 +1008,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -500, y: 0, z: -500}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
